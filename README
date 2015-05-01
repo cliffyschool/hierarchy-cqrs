@@ -1,0 +1,7 @@
+Just checkin' out some of Guava's immutable collections.
+
+* *nix: ./gradlew clean test
+
+* Windoze: gradlew.bat clean test
+
+
