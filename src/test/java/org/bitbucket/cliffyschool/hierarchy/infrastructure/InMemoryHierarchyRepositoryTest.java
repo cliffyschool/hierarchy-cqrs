@@ -1,5 +1,6 @@
 package org.bitbucket.cliffyschool.hierarchy.infrastructure;
 
+import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.junit.Before;
@@ -18,7 +19,7 @@ public class InMemoryHierarchyRepositoryTest {
     public void setUp()
     {
         hierarchy = new Hierarchy(UUID.randomUUID());
-        hierarchy.createNewNode("abc");
+        hierarchy.apply(new CreateNodeCommand("myNode", "blue", "abc"));
     }
 
 

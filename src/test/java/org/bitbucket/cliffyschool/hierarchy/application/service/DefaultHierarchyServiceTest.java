@@ -2,6 +2,7 @@ package org.bitbucket.cliffyschool.hierarchy.application.service;
 
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGridProjection;
+import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.InMemoryHierarchyRepository;
 import org.junit.Before;
@@ -26,12 +27,12 @@ public class DefaultHierarchyServiceTest {
 
     @Test
     public void whenNodeIsCreatedThenGridViewShouldIncludeIt(){
-        hierarchyService.createNewNode(hierarchy.getId(), "newNodeName");
+        hierarchyService.createNewNode(hierarchy.getId(), new CreateNodeCommand("myNode", "", ""));
 
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchy.getId());
 
         assertThat(hierarchyAsGrid).isPresent();
-        assertThat(hierarchyAsGrid.get().getNodes()).extracting("name").contains("newNodeName");
+        assertThat(hierarchyAsGrid.get().getNodes()).extracting("name").contains("myNode");
 
     }
 }

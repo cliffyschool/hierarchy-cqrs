@@ -1,13 +1,18 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
-/**
- * Created by cfreeman on 9/4/15.
- */
+import java.util.UUID;
+
 public class Node {
+    private final UUID id;
     private String name;
 
-    public Node(String name) {
+    public Node(UUID id, String name) {
+        this.id = id;
         this.name = name;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getName() {

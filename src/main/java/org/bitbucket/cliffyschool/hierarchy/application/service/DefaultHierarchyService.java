@@ -3,6 +3,7 @@ package org.bitbucket.cliffyschool.hierarchy.application.service;
 import com.google.common.collect.Lists;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGridProjection;
+import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.event.Event;
@@ -30,10 +31,10 @@ public class DefaultHierarchyService implements HierarchyService {
     }
 
     @Override
-    public void createNewNode(UUID hierarchyId, String nodeName) {
+    public void createNewNode(UUID hierarchyId, CreateNodeCommand createNodeCommand) {
         Optional<Hierarchy> hier = hierarchyRepository.findById(hierarchyId);
 
-        List<Event> events = hier.map(h -> h.createNewNode(nodeName)).get();
+        List<Event> events = hier.map(h -> h.apply(createNodeCommand)).get();
 
         hier.ifPresent(hierarchyRepository::save);
 

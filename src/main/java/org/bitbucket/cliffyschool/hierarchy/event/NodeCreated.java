@@ -6,9 +6,11 @@ public class NodeCreated extends Event {
     private String nodeName;
     private String nodeColor;
     private String nodeShape;
+    private UUID nodeId;
 
-    public NodeCreated(UUID hierarchyId, String nodeName, String nodeColor, String nodeShape) {
+    public NodeCreated(UUID hierarchyId, UUID nodeId, String nodeName, String nodeColor, String nodeShape) {
         super(hierarchyId);
+        this.nodeId = nodeId;
         this.nodeName = nodeName;
         this.nodeColor = nodeColor;
         this.nodeShape = nodeShape;
@@ -28,5 +30,9 @@ public class NodeCreated extends Event {
 
     public String getNodeShape() {
         return nodeShape;
+    }
+
+    public UUID getNodeId() {
+        return nodeId;
     }
 }
