@@ -4,7 +4,7 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGr
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.cqrs.EventStream;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.InMemoryHierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.event.CreateHierarchyCommand;

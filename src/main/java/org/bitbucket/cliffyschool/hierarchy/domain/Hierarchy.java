@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.cqrs.EventStream;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.*;
 
 import java.util.Map;
@@ -25,8 +25,8 @@ public class Hierarchy {
     public void apply(Event event){
         if (event instanceof NodeCreated)
             apply((NodeCreated)event);
-        else if (event instanceof NodeNamedChanged)
-            apply((NodeNamedChanged)event);
+        else if (event instanceof NodeNameChanged)
+            apply((NodeNameChanged)event);
     }
 
     public void apply(NodeCreated event) {
@@ -36,7 +36,7 @@ public class Hierarchy {
         versionId = event.getVersionId();
     }
 
-    public void apply(NodeNamedChanged event)
+    public void apply(NodeNameChanged event)
     {
         Node existing = nodesById.get(event.getNodeId());
         if (existing != null)
@@ -54,13 +54,13 @@ public class Hierarchy {
     }
 
     public static EventStream createNewHierarchy(CreateHierarchyCommand command){
-        return new EventStream(Lists.newArrayList(new HierarchyCreated(command.getHierarchyId(), command.getOriginalVersionId())));
+        return EventStream.from(Lists.newArrayList(new HierarchyCreated(command.getHierarchyId(), command.getOriginalVersionId())));
     }
 
     public EventStream createNode(CreateNodeCommand command) {
         if (nodesByName.containsKey(command.getNodeName()))
             throw new RuntimeException(String.format("Node with name '%s' already exists.", command.getNodeName()));
-        return new EventStream(Lists.newArrayList(new NodeCreated(id, versionId, command.getNodeId(), command.getNodeName(), "blue", "circle")));
+        return EventStream.from(Lists.newArrayList(new NodeCreated(id, versionId, command.getNodeId(), command.getNodeName(), "blue", "circle")));
     }
 
     public EventStream changeNodeName(ChangeNodeNameCommand command) {
@@ -70,7 +70,7 @@ public class Hierarchy {
         if (!nodesById.containsKey(command.getNodeId()))
             throw new RuntimeException(String.format("Node '%s' not found.", command.getNodeId()));
 
-        return new EventStream(Lists.newArrayList(new NodeNamedChanged(id, versionId, command.getNodeId(), command.getNewName())));
+        return EventStream.from(Lists.newArrayList(new NodeNameChanged(id, versionId, command.getNodeId(), command.getNewName())));
     }
     public Node nodeById(UUID nodeId) {
         return nodesById.get(nodeId);

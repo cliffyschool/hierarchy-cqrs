@@ -1,9 +1,9 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
-import org.bitbucket.cliffyschool.hierarchy.cqrs.EventStream;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
-import org.bitbucket.cliffyschool.hierarchy.event.NodeNamedChanged;
+import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,8 +33,8 @@ public class ChangeNodeName {
         EventStream eventStream = hierarchy.changeNodeName(new ChangeNodeNameCommand(nodeId, newName, 1L));
 
         assertThat(eventStream.getEvents()).hasSize(1);
-        assertThat(eventStream.getEvents().get(0)).isInstanceOf(NodeNamedChanged.class);
-        NodeNamedChanged event = (NodeNamedChanged) eventStream.getEvents().get(0);
+        assertThat(eventStream.getEvents().get(0)).isInstanceOf(NodeNameChanged.class);
+        NodeNameChanged event = (NodeNameChanged) eventStream.getEvents().get(0);
         assertThat(event.getNodeId()).isEqualTo(nodeId);
         assertThat(event.getNewName()).isEqualTo(newName);
     }
@@ -44,7 +44,7 @@ public class ChangeNodeName {
         String newName = "secondName";
         UUID nodeId = UUID.randomUUID();
         hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, nodeId, "firstName", "blue", "circle"));
-        hierarchy.apply(new NodeNamedChanged(hierarchy.getId(), 1L, nodeId, newName));
+        hierarchy.apply(new NodeNameChanged(hierarchy.getId(), 1L, nodeId, newName));
 
         assertThat(hierarchy.nodeById(nodeId).getName()).isEqualTo(newName);
     }

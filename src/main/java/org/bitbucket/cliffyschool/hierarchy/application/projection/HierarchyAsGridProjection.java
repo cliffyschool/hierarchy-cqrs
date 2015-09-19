@@ -3,11 +3,11 @@ package org.bitbucket.cliffyschool.hierarchy.application.projection;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
-import org.bitbucket.cliffyschool.hierarchy.cqrs.EventStream;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.Event;
 import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
-import org.bitbucket.cliffyschool.hierarchy.event.NodeNamedChanged;
+import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
 
 import java.util.Map;
 import java.util.Optional;
@@ -44,9 +44,9 @@ public class HierarchyAsGridProjection {
             HierarchyCreated hc = (HierarchyCreated)event;
             grids.put(hc.getHierarchyId(), new HierarchyAsGrid(hc.getHierarchyId(), Lists.newArrayList()));
         }
-        else if (event instanceof NodeNamedChanged)
+        else if (event instanceof NodeNameChanged)
         {
-            NodeNamedChanged nc = (NodeNamedChanged)event;
+            NodeNameChanged nc = (NodeNameChanged)event;
             Optional.ofNullable(grids.get(event.getHierarchyId()))
                     .ifPresent(grid -> {
                         Optional<NodeDto> existing = grid.getNodes().stream()
