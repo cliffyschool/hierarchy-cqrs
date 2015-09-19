@@ -23,6 +23,10 @@ public class Hierarchy {
         versionId = 1L;
     }
 
+    public void apply(Iterable<Event> events) {
+        events.forEach(this::apply);
+    }
+
     public void apply(Event event){
         if (event instanceof NodeCreated)
             apply((NodeCreated)event);
@@ -45,6 +49,7 @@ public class Hierarchy {
             Node changedNode = new Node(existing.getId(), event.getNewName());
             nodesById.put(changedNode.getId(), changedNode);
             nodesByName.put(changedNode.getName(), changedNode);
+            nodesByName.remove(existing.getName());
             versionId = event.getVersionId();
         }
     }

@@ -28,27 +28,25 @@ public class CreateNode {
     }
 
     @Test
-    public void shouldReturnEvent() {
-        EventStream eventStream = hierarchy.createNode(new CreateNodeCommand(nodeId, 1L, "blue", "circle", "myNode"));
+    public void whenNodeCreatedThenNodeByIdShouldReturnIt() {
+        hierarchy.apply(hierarchy.createNode(createNodeCommand).getEvents());
 
-        assertThat(eventStream.getEvents()).hasSize(1);
-        assertThat(eventStream.getEvents().get(0)).isInstanceOf(NodeCreated.class);
-        NodeCreated event = (NodeCreated) eventStream.getEvents().get(0);
-        assertThat(event.getNodeId()).isEqualTo(nodeId);
-        assertThat(event.getNodeName()).isEqualTo("myNode");
-        assertThat(event.getNodeColor()).isEqualTo("blue");
-        assertThat(event.getNodeShape()).isEqualTo("circle");
+        assertThat(hierarchy.nodeById(nodeId)).isNotNull();
     }
 
     @Test
-    public void whenNodeCreatedThenNodeByIdShouldReturnIt() {
+    public void whenNodeCreatedThenPropertiesShouldBeSet() {
+        hierarchy.apply(hierarchy.createNode(createNodeCommand).getEvents());
+
+        Node node = hierarchy.nodeById(nodeId);
+        assertThat(node.getName()).isEqualTo(createNodeCommand.getNodeName());
     }
 
     @Rule
     public ExpectedException thrown= ExpectedException.none();
 
     @Test
-    public void whenNodeWithSameNameAlreadyExistsThenExceptionShouldBeThrown() {
+    public void whenDuplicateNodeNameIsUsedThenCreateNodeShouldThrowAnException() {
         String nameOfExistingNode = "nameOfExistingNode";
         hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, UUID.randomUUID(), nameOfExistingNode, "", ""));
 
@@ -56,14 +54,6 @@ public class CreateNode {
         thrown.expectMessage(containsString("exists"));
 
         hierarchy.createNode(new CreateNodeCommand(nodeId, 1L, "blue", "circle", nameOfExistingNode));
-    }
-
-    @Test
-    public void whenNodeCreatedThenItCanBeLookedUpById() {
-        UUID nodeId = UUID.randomUUID();
-        hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, nodeId, "bob", "blue", "circle"));
-
-        assertThat(hierarchy.nodeById(nodeId)).isNotNull();
     }
 }
 
