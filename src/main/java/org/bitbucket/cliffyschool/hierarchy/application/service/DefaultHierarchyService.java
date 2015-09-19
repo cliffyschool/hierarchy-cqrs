@@ -1,44 +1,57 @@
 package org.bitbucket.cliffyschool.hierarchy.application.service;
 
-import com.google.common.collect.Lists;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGridProjection;
+import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.cqrs.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
-import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
-import org.bitbucket.cliffyschool.hierarchy.event.Event;
-import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreatedEvent;
+import org.bitbucket.cliffyschool.hierarchy.domain.InMemoryHierarchyRepository;
+import org.bitbucket.cliffyschool.hierarchy.event.CreateHierarchyCommand;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public class DefaultHierarchyService implements HierarchyService {
 
-    private HierarchyRepository hierarchyRepository;
+    private InMemoryHierarchyRepository hierarchyRepository;
     private HierarchyAsGridProjection gridProjection;
 
-    public DefaultHierarchyService(HierarchyRepository hierarchyRepository, HierarchyAsGridProjection gridProjection)
+    public DefaultHierarchyService(InMemoryHierarchyRepository hierarchyRepository, HierarchyAsGridProjection gridProjection)
     {
         this.hierarchyRepository = hierarchyRepository;
         this.gridProjection = gridProjection;
     }
 
+
     @Override
-    public void saveHierarchy(Hierarchy hierarchy) {
-        Optional.ofNullable(hierarchy).ifPresent(hierarchyRepository::save);
-        Optional.ofNullable(hierarchy).ifPresent(h -> gridProjection.write(Lists.newArrayList(new HierarchyCreatedEvent(h.getId()))));
+    public void createNewHierarchy(CreateHierarchyCommand createHierarchyCommand) {
+        EventStream stream = Hierarchy.createNewHierarchy(createHierarchyCommand);
+        this.hierarchyRepository.store(createHierarchyCommand.getHierarchyId(), stream);
+
+        gridProjection.write(stream);
     }
 
     @Override
     public void createNewNode(UUID hierarchyId, CreateNodeCommand createNodeCommand) {
-        Optional<Hierarchy> hier = hierarchyRepository.findById(hierarchyId);
+        Hierarchy hier = hierarchyRepository.findById(hierarchyId)
+                .orElseThrow(() -> new RuntimeException(String.format("Hierarchy %s not found.", hierarchyId)));
 
-        List<Event> events = hier.map(h -> h.apply(createNodeCommand)).get();
+        EventStream stream = hier.createNode(createNodeCommand);
+        hierarchyRepository.store(hierarchyId, stream);
 
-        hier.ifPresent(hierarchyRepository::save);
+        gridProjection.write(stream);
+    }
 
-        gridProjection.write(events);
+    @Override
+    public void changeNodeName(UUID hierarchyId, ChangeNodeNameCommand changeNodeNameCommand) {
+        Hierarchy hier = hierarchyRepository.findById(hierarchyId)
+                .orElseThrow(() -> new RuntimeException(String.format("Hierarchy %s not found.", hierarchyId)));
+
+        EventStream stream = hier.changeNodeName(changeNodeNameCommand);
+        hierarchyRepository.store(hierarchyId, stream);
+
+        gridProjection.write(stream);
     }
 
     @Override

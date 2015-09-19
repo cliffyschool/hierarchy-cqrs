@@ -1,14 +1,23 @@
 package org.bitbucket.cliffyschool.hierarchy.command;
 
-public class CreateNodeCommand implements Command {
+import java.util.UUID;
+
+public class CreateNodeCommand extends Command {
     private final String shape;
     private final String color;
+    private final UUID nodeId;
     private String nodeName;
 
-    public CreateNodeCommand(String nodeName, String color, String shape) {
+    public CreateNodeCommand(UUID nodeId, String nodeName, String color, String shape, long versionId) {
+        super(versionId);
+        this.nodeId = nodeId;
         this.nodeName = nodeName;
         this.color = color;
         this.shape = shape;
+    }
+
+    public UUID getNodeId() {
+        return nodeId;
     }
 
     public String getColor() {

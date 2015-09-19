@@ -1,4 +1,13 @@
 package org.bitbucket.cliffyschool.hierarchy.command;
 
-public interface Command {
+public abstract class Command {
+    private long originalVersionId;
+
+    public Command(long originalVersionId) {
+        this.originalVersionId = originalVersionId;
+    }
+
+    public long getOriginalVersionId() {
+        return originalVersionId;
+    }
 }

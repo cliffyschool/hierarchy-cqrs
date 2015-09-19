@@ -3,15 +3,13 @@ package org.bitbucket.cliffyschool.hierarchy.cqrs;
 import org.bitbucket.cliffyschool.hierarchy.event.Event;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-public class EventStore {
+public interface EventStore<T> {
 
-    public EventStream loadEvents(String aggregateId){
-        return null;
-    }
+    Optional<T> findById(UUID aggregateId);
 
-    public void store(String aggregateId, long versionId, List<Event> events) {
-
-    }
+    void store(UUID aggregateId, EventStream stream);
 
 }

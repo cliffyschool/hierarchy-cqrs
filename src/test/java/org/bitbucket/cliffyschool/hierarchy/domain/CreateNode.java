@@ -1,48 +1,62 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
-import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.event.Event;
+import org.bitbucket.cliffyschool.hierarchy.cqrs.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
 
 public class CreateNode {
 
-    private Hierarchy hier = new Hierarchy(UUID.randomUUID());
+    private Hierarchy hierarchy;
+    private UUID nodeId;
+
+    @Before
+    public void setUp() {
+        hierarchy = new Hierarchy(UUID.randomUUID());
+        nodeId = UUID.randomUUID();
+    }
 
     @Test
-    public void createNodeShouldCreateEvent(){
-        List<Event> events = hier.apply(new CreateNodeCommand("myNode", "blue", "circle"));
+    public void shouldReturnEvent() {
+        EventStream eventStream = hierarchy.createNode(new CreateNodeCommand(nodeId, "myNode", "blue", "circle", 1L));
 
-        assertThat(events).hasSize(1);
-        assertThat(events.get(0)).isInstanceOf(NodeCreated.class);
-        NodeCreated event = (NodeCreated)events.get(0);
-        assertThat(event.getNodeId()).isNotNull();
+        assertThat(eventStream.getEvents()).hasSize(1);
+        assertThat(eventStream.getEvents().get(0)).isInstanceOf(NodeCreated.class);
+        NodeCreated event = (NodeCreated) eventStream.getEvents().get(0);
+        assertThat(event.getNodeId()).isEqualTo(nodeId);
         assertThat(event.getNodeName()).isEqualTo("myNode");
         assertThat(event.getNodeColor()).isEqualTo("blue");
         assertThat(event.getNodeShape()).isEqualTo("circle");
     }
 
-    @Test
-    public void whenNodeIsCreatedThenHierarchyShouldContainIt(){
-        NodeCreated nc = (NodeCreated)hier.apply(new CreateNodeCommand("myNode", "blue", "circle"))
-                .get(0);
+    @Rule
+    public ExpectedException thrown= ExpectedException.none();
 
-        assertThat(hier.nodeById(nc.getNodeId())).isNotNull();
+    @Test
+    public void whenNodeWithSameNameAlreadyExistsThenExceptionShouldBeThrown() {
+        String nameOfExistingNode = "nameOfExistingNode";
+        hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, UUID.randomUUID(), nameOfExistingNode, "", ""));
+
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage(containsString("exists"));
+
+        hierarchy.createNode(new CreateNodeCommand(nodeId, nameOfExistingNode, "blue", "circle", 1L));
     }
 
     @Test
-    public void changeNodeName(){
-        NodeCreated event = (NodeCreated)hier.apply(new CreateNodeCommand("myNode", "", "")).get(0);
-        String newName = "secondName";
-        hier.apply(new ChangeNodeNameCommand(event.getNodeId(),  newName));
+    public void whenNodeCreatedThenItCanBeLookedUpById() {
+        UUID nodeId = UUID.randomUUID();
+        hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, nodeId, "bob", "blue", "circle"));
 
-        assertThat(hier.nodeById(event.getNodeId()).getName()).isEqualTo( newName);
+        assertThat(hierarchy.nodeById(nodeId)).isNotNull();
     }
 }
 
