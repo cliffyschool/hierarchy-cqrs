@@ -8,19 +8,24 @@ import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.InMemoryHierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.event.CreateHierarchyCommand;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public class DefaultHierarchyService implements HierarchyService {
 
+    private final HierarchyAsGridProjection gridProjection;
     private InMemoryHierarchyRepository hierarchyRepository;
-    private HierarchyAsGridProjection gridProjection;
+    private FakeBus fakeBus;
 
-    public DefaultHierarchyService(InMemoryHierarchyRepository hierarchyRepository, HierarchyAsGridProjection gridProjection)
+    public DefaultHierarchyService(InMemoryHierarchyRepository hierarchyRepository,
+                                   HierarchyAsGridProjection gridProjection,
+                                   FakeBus fakeBus)
     {
         this.hierarchyRepository = hierarchyRepository;
         this.gridProjection = gridProjection;
+        this.fakeBus = fakeBus;
     }
 
 
@@ -29,7 +34,7 @@ public class DefaultHierarchyService implements HierarchyService {
         EventStream stream = Hierarchy.createNewHierarchy(createHierarchyCommand);
         this.hierarchyRepository.store(createHierarchyCommand.getHierarchyId(), stream);
 
-        gridProjection.write(stream);
+        fakeBus.publish(stream);
     }
 
     @Override
@@ -40,7 +45,7 @@ public class DefaultHierarchyService implements HierarchyService {
         EventStream stream = hier.createNode(createNodeCommand);
         hierarchyRepository.store(hierarchyId, stream);
 
-        gridProjection.write(stream);
+        fakeBus.publish(stream);
     }
 
     @Override
@@ -51,11 +56,11 @@ public class DefaultHierarchyService implements HierarchyService {
         EventStream stream = hier.changeNodeName(changeNodeNameCommand);
         hierarchyRepository.store(hierarchyId, stream);
 
-        gridProjection.write(stream);
+        fakeBus.publish(stream);
     }
 
     @Override
     public Optional<HierarchyAsGrid> getHierarchyAsGrid(UUID hierarchyId) {
-        return gridProjection.findHierarchyAsGrid(hierarchyId);
+        return gridProjection.find(hierarchyId);
     }
 }
