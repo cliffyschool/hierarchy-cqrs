@@ -30,7 +30,7 @@ public class ChangeNodeName {
         UUID nodeId = UUID.randomUUID();
         hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, nodeId, "firstName", "blue", "circle"));
         String newName = "secondName";
-        EventStream eventStream = hierarchy.changeNodeName(new ChangeNodeNameCommand(nodeId, newName, 1L));
+        EventStream eventStream = hierarchy.changeNodeName(new ChangeNodeNameCommand(nodeId, 1L, newName));
 
         assertThat(eventStream.getEvents()).hasSize(1);
         assertThat(eventStream.getEvents().get(0)).isInstanceOf(NodeNameChanged.class);
@@ -59,7 +59,7 @@ public class ChangeNodeName {
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("exists"));
 
-        hierarchy.changeNodeName(new ChangeNodeNameCommand(nodeId, nameOfExistingNode, 1L));
+        hierarchy.changeNodeName(new ChangeNodeNameCommand(nodeId, 1L, nameOfExistingNode));
     }
 
 }

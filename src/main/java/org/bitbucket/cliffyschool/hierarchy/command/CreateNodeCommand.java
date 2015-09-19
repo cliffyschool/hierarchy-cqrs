@@ -8,7 +8,7 @@ public class CreateNodeCommand extends Command {
     private final UUID nodeId;
     private String nodeName;
 
-    public CreateNodeCommand(UUID nodeId, String nodeName, String color, String shape, long versionId) {
+    public CreateNodeCommand(UUID nodeId, long versionId, String color, String shape, String nodeName) {
         super(versionId);
         this.nodeId = nodeId;
         this.nodeName = nodeName;

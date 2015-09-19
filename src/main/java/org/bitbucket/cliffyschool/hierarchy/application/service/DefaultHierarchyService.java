@@ -7,7 +7,7 @@ import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.InMemoryHierarchyRepository;
-import org.bitbucket.cliffyschool.hierarchy.event.CreateHierarchyCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 
 import java.util.Optional;

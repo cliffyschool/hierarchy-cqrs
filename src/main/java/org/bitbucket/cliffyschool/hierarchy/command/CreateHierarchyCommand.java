@@ -1,6 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.event;
-
-import org.bitbucket.cliffyschool.hierarchy.command.Command;
+package org.bitbucket.cliffyschool.hierarchy.command;
 
 import java.util.UUID;
 
@@ -8,8 +6,8 @@ public class CreateHierarchyCommand extends Command {
     private UUID hierarchyId;
     private String name;
 
-    public CreateHierarchyCommand(UUID hierarchyId, String name, long originalVersionId) {
-        super(originalVersionId);
+    public CreateHierarchyCommand(UUID hierarchyId, long baseVersionId, String name) {
+        super(baseVersionId);
         this.hierarchyId = hierarchyId;
         this.name = name;
     }

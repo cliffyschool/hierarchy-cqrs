@@ -5,9 +5,8 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGr
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGridProjectionUpdater;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.InMemoryHierarchyRepository;
-import org.bitbucket.cliffyschool.hierarchy.event.CreateHierarchyCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,14 +28,14 @@ public class DefaultHierarchyServiceTest {
     @Before
     public void setUp() {
         hierarchyId = UUID.randomUUID();
-        hierarchyService.createNewHierarchy(new CreateHierarchyCommand(hierarchyId, "testHierarchy", 0L));
+        hierarchyService.createNewHierarchy(new CreateHierarchyCommand(hierarchyId, 0L, "testHierarchy"));
     }
 
 
     @Test
     public void whenNodeIsCreatedThenGridViewShouldIncludeIt(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, "myNode", "", "", 1L));
+        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "", "", "myNode"));
 
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
@@ -48,8 +47,8 @@ public class DefaultHierarchyServiceTest {
     @Test
     public void whenNodeIsRenamedThenGridViewShouldReflectIt(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, "myNode", "", "", 1L));
-        hierarchyService.changeNodeName(hierarchyId, new ChangeNodeNameCommand(nodeId, "newName", 2L));
+        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "", "", "myNode"));
+        hierarchyService.changeNodeName(hierarchyId, new ChangeNodeNameCommand(nodeId, 2L, "newName"));
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
         assertThat(hierarchyAsGrid).isPresent();

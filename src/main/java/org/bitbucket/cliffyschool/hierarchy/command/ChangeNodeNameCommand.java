@@ -14,8 +14,8 @@ public class ChangeNodeNameCommand extends Command {
         return newName;
     }
 
-    public ChangeNodeNameCommand(UUID nodeId, String newName, long originalVersionId) {
-        super(originalVersionId);
+    public ChangeNodeNameCommand(UUID nodeId, long baseVersionId, String newName) {
+        super(baseVersionId);
         this.nodeId = nodeId;
         this.newName = newName;
     }

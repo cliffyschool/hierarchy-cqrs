@@ -1,6 +1,7 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
 import org.junit.Before;
@@ -17,16 +18,18 @@ public class CreateNode {
 
     private Hierarchy hierarchy;
     private UUID nodeId;
+    private CreateNodeCommand createNodeCommand;
 
     @Before
     public void setUp() {
-        hierarchy = new Hierarchy(UUID.randomUUID());
+        hierarchy = Hierarchy.apply(new HierarchyCreated(UUID.randomUUID()));
         nodeId = UUID.randomUUID();
+        createNodeCommand = new CreateNodeCommand(nodeId, hierarchy.getVersionId(), "blue", "circle", nodeId.toString());
     }
 
     @Test
     public void shouldReturnEvent() {
-        EventStream eventStream = hierarchy.createNode(new CreateNodeCommand(nodeId, "myNode", "blue", "circle", 1L));
+        EventStream eventStream = hierarchy.createNode(new CreateNodeCommand(nodeId, 1L, "blue", "circle", "myNode"));
 
         assertThat(eventStream.getEvents()).hasSize(1);
         assertThat(eventStream.getEvents().get(0)).isInstanceOf(NodeCreated.class);
@@ -35,6 +38,10 @@ public class CreateNode {
         assertThat(event.getNodeName()).isEqualTo("myNode");
         assertThat(event.getNodeColor()).isEqualTo("blue");
         assertThat(event.getNodeShape()).isEqualTo("circle");
+    }
+
+    @Test
+    public void whenNodeCreatedThenNodeByIdShouldReturnIt() {
     }
 
     @Rule
@@ -48,7 +55,7 @@ public class CreateNode {
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("exists"));
 
-        hierarchy.createNode(new CreateNodeCommand(nodeId, nameOfExistingNode, "blue", "circle", 1L));
+        hierarchy.createNode(new CreateNodeCommand(nodeId, 1L, "blue", "circle", nameOfExistingNode));
     }
 
     @Test

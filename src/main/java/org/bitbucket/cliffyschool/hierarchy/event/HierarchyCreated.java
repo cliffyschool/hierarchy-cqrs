@@ -1,11 +1,14 @@
 package org.bitbucket.cliffyschool.hierarchy.event;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 public class HierarchyCreated extends Event {
-    public HierarchyCreated(UUID id, long versionId) {
-        super(id, versionId);
+    public HierarchyCreated(UUID id) {
+        this(id, 1L);
+    }
+
+    private HierarchyCreated(UUID id, long newVersionId){
+        super(id, newVersionId);
     }
 
     @Override

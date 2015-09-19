@@ -31,7 +31,7 @@ public class InMemoryHierarchyRepositoryTest {
         hierarchyId = UUID.randomUUID();
         firstNodeId = UUID.randomUUID();
         List<Event> eventList = Lists.newArrayList(
-                new HierarchyCreated(hierarchyId, 1L),
+                new HierarchyCreated(hierarchyId),
                 new NodeCreated(hierarchyId, 1L, firstNodeId, "node1", "", ""),
                 new NodeCreated(hierarchyId, 1L, UUID.randomUUID(), "node2", "", ""),
                 new NodeNameChanged(hierarchyId, 1L, firstNodeId, "Node 1"));
@@ -72,7 +72,7 @@ public class InMemoryHierarchyRepositoryTest {
     @Test
     public void whenEventStreamVersionIsStaleThenStoreShouldThrowException(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId, 0L))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId))));
         hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "nodeName", "nodeColor", "nodeShape"))));
 
         thrown.expect(RuntimeException.class);
@@ -83,7 +83,7 @@ public class InMemoryHierarchyRepositoryTest {
     @Test
     public void whenVersionIdsAreNotContiguousThenStoreThrowException(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId, 0L))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId))));
         hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "nodeName", "nodeColor", "nodeShape"))));
 
         thrown.expect(RuntimeException.class);

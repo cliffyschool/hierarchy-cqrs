@@ -3,6 +3,7 @@ package org.bitbucket.cliffyschool.hierarchy.domain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.*;
@@ -54,7 +55,7 @@ public class Hierarchy {
     }
 
     public static EventStream createNewHierarchy(CreateHierarchyCommand command){
-        return EventStream.from(Lists.newArrayList(new HierarchyCreated(command.getHierarchyId(), command.getOriginalVersionId())));
+        return EventStream.from(Lists.newArrayList(new HierarchyCreated(command.getHierarchyId())));
     }
 
     public EventStream createNode(CreateNodeCommand command) {
@@ -74,6 +75,10 @@ public class Hierarchy {
     }
     public Node nodeById(UUID nodeId) {
         return nodesById.get(nodeId);
+    }
+
+    public long getVersionId() {
+        return versionId;
     }
 
     public UUID getId() {

@@ -3,8 +3,7 @@ package org.bitbucket.cliffyschool.hierarchy.application.service;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
-import org.bitbucket.cliffyschool.hierarchy.event.CreateHierarchyCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 
 import java.util.Optional;
 import java.util.UUID;
