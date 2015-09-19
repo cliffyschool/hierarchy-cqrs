@@ -34,7 +34,7 @@ public class HierarchyAsGridProjectionUpdater {
             gridProjection.find(event.getHierarchyId())
                     .ifPresent(grid -> {
                         grid.getNodes().removeIf(n -> StringUtils.equals(nc.getNodeName(), n.getName()));
-                        grid.getNodes().add(new NodeDto(nc.getNodeId(), nc.getNodeName(), nc.getNodeColor()));
+                        grid.getNodes().add(new FlatNode(nc.getNodeId(), nc.getNodeName(), nc.getNodeColor()));
                     });
         }
         else if (event instanceof HierarchyCreated)
@@ -47,7 +47,7 @@ public class HierarchyAsGridProjectionUpdater {
             NodeNameChanged nc = (NodeNameChanged)event;
             gridProjection.find(event.getHierarchyId())
                     .ifPresent(grid -> {
-                        Optional<NodeDto> existing = grid.getNodes().stream()
+                        Optional<FlatNode> existing = grid.getNodes().stream()
                                 .filter(n -> n.getNodeId().equals(nc.getNodeId())).findAny();
                         existing.ifPresent(n -> n.setName(nc.getNewName()));
                     });

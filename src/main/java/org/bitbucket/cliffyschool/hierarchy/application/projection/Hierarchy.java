@@ -3,11 +3,11 @@ package org.bitbucket.cliffyschool.hierarchy.application.projection;
 import java.util.List;
 import java.util.UUID;
 
-public class HierarchyAsGrid {
+public class Hierarchy {
     private UUID id;
-    private List<FlatNode> nodes;
+    private List<Node> nodes;
 
-    public HierarchyAsGrid(UUID id, List<FlatNode> nodes)
+    public Hierarchy(UUID id, List<Node> nodes)
     {
         this.id = id;
         this.nodes = nodes;
@@ -17,11 +17,11 @@ public class HierarchyAsGrid {
         return id;
     }
 
-    public List<FlatNode> getNodes() {
+    public List<Node> getNodes() {
         return nodes;
     }
 
-    public void setNodes(List<FlatNode> nodes) {
+    public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
     }
 }

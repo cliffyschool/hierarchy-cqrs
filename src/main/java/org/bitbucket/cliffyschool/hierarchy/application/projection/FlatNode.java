@@ -2,12 +2,12 @@ package org.bitbucket.cliffyschool.hierarchy.application.projection;
 
 import java.util.UUID;
 
-public class NodeDto {
+public class FlatNode {
     private UUID nodeId;
     private String name;
     private String color;
 
-    public NodeDto(UUID nodeId, String name, String color) {
+    public FlatNode(UUID nodeId, String name, String color) {
         this.nodeId = nodeId;
         this.name = name;
         this.color = color;
