@@ -32,8 +32,8 @@ public class InMemoryHierarchyRepositoryTest {
         firstNodeId = UUID.randomUUID();
         List<Event> eventList = Lists.newArrayList(
                 new HierarchyCreated(hierarchyId),
-                new NodeCreated(hierarchyId, 1L, firstNodeId, "node1", "", ""),
-                new NodeCreated(hierarchyId, 1L, UUID.randomUUID(), "node2", "", ""),
+                new NodeCreated(hierarchyId, 1L, firstNodeId, "node1", ""),
+                new NodeCreated(hierarchyId, 1L, UUID.randomUUID(), "node2", ""),
                 new NodeNameChanged(hierarchyId, 1L, firstNodeId, "Node 1"));
         eventStream = EventStream.from(eventList);
     }
@@ -73,21 +73,21 @@ public class InMemoryHierarchyRepositoryTest {
     public void whenEventStreamVersionIsStaleThenStoreShouldThrowException(){
         UUID nodeId = UUID.randomUUID();
         hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId))));
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "nodeName", "nodeColor", "nodeShape"))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "nodeName", "nodeColor"))));
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("updated"));
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "otherNodeName", "nodeColor", "nodeShape"))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "otherNodeName", "nodeColor"))));
     }
 
     @Test
     public void whenVersionIdsAreNotContiguousThenStoreThrowException(){
         UUID nodeId = UUID.randomUUID();
         hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId))));
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "nodeName", "nodeColor", "nodeShape"))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "nodeName", "nodeColor"))));
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("skip"));
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 3L, nodeId, "otherNodeName", "nodeColor", "nodeShape"))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 3L, nodeId, "otherNodeName", "nodeColor"))));
     }
 }

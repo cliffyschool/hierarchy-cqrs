@@ -35,7 +35,7 @@ public class Hierarchy {
     }
 
     public void apply(NodeCreated event) {
-        Node node = new Node(event.getNodeId(), event.getNodeName());
+        Node node = new Node(event.getNodeId(), event.getNodeName(), event.getNodeColor());
         nodesByName.put(node.getName(), node);
         nodesById.put(node.getId(), node);
         versionId = event.getVersionId();
@@ -46,7 +46,7 @@ public class Hierarchy {
         Node existing = nodesById.get(event.getNodeId());
         if (existing != null)
         {
-            Node changedNode = new Node(existing.getId(), event.getNewName());
+            Node changedNode = new Node(existing.getId(), event.getNewName(), existing.getColor());
             nodesById.put(changedNode.getId(), changedNode);
             nodesByName.put(changedNode.getName(), changedNode);
             nodesByName.remove(existing.getName());
@@ -66,7 +66,7 @@ public class Hierarchy {
     public EventStream createNode(CreateNodeCommand command) {
         if (nodesByName.containsKey(command.getNodeName()))
             throw new RuntimeException(String.format("Node with name '%s' already exists.", command.getNodeName()));
-        return EventStream.from(Lists.newArrayList(new NodeCreated(id, versionId, command.getNodeId(), command.getNodeName(), "blue", "circle")));
+        return EventStream.from(Lists.newArrayList(new NodeCreated(id, versionId, command.getNodeId(), command.getNodeName(), "blue")));
     }
 
     public EventStream changeNodeName(ChangeNodeNameCommand command) {

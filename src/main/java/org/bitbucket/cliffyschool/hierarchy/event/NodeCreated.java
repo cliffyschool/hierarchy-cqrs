@@ -5,15 +5,13 @@ import java.util.UUID;
 public class NodeCreated extends Event {
     private String nodeName;
     private String nodeColor;
-    private String nodeShape;
     private UUID nodeId;
 
-    public NodeCreated(UUID hierarchyId, long versionId, UUID nodeId, String nodeName, String nodeColor, String nodeShape) {
+    public NodeCreated(UUID hierarchyId, long versionId, UUID nodeId, String nodeName, String nodeColor) {
         super(hierarchyId, versionId);
         this.nodeId = nodeId;
         this.nodeName = nodeName;
         this.nodeColor = nodeColor;
-        this.nodeShape = nodeShape;
     }
 
     public String getNodeName() {
@@ -28,16 +26,12 @@ public class NodeCreated extends Event {
         return nodeColor;
     }
 
-    public String getNodeShape() {
-        return nodeShape;
-    }
-
     public UUID getNodeId() {
         return nodeId;
     }
 
     @Override
     public Event copy(long newVersionId) {
-        return new NodeCreated(getHierarchyId(), newVersionId, nodeId, nodeName, nodeColor, nodeShape);
+        return new NodeCreated(getHierarchyId(), newVersionId, nodeId, nodeName, nodeColor);
     }
 }

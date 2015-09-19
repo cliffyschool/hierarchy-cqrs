@@ -24,7 +24,7 @@ public class CreateNode {
     public void setUp() {
         hierarchy = Hierarchy.apply(new HierarchyCreated(UUID.randomUUID()));
         nodeId = UUID.randomUUID();
-        createNodeCommand = new CreateNodeCommand(nodeId, hierarchy.getVersionId(), "blue", "circle", nodeId.toString());
+        createNodeCommand = new CreateNodeCommand(nodeId, hierarchy.getVersionId(), "blue", nodeId.toString());
     }
 
     @Test
@@ -40,6 +40,7 @@ public class CreateNode {
 
         Node node = hierarchy.nodeById(nodeId);
         assertThat(node.getName()).isEqualTo(createNodeCommand.getNodeName());
+        assertThat(node.getColor()).isEqualTo(createNodeCommand.getColor());
     }
 
     @Rule
@@ -48,12 +49,12 @@ public class CreateNode {
     @Test
     public void whenDuplicateNodeNameIsUsedThenCreateNodeShouldThrowAnException() {
         String nameOfExistingNode = "nameOfExistingNode";
-        hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, UUID.randomUUID(), nameOfExistingNode, "", ""));
+        hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, UUID.randomUUID(), nameOfExistingNode, ""));
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("exists"));
 
-        hierarchy.createNode(new CreateNodeCommand(nodeId, 1L, "blue", "circle", nameOfExistingNode));
+        hierarchy.createNode(new CreateNodeCommand(nodeId, 1L, "blue", nameOfExistingNode));
     }
 }
 

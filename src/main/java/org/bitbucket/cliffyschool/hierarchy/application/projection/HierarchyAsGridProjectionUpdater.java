@@ -34,7 +34,7 @@ public class HierarchyAsGridProjectionUpdater {
             gridProjection.find(event.getHierarchyId())
                     .ifPresent(grid -> {
                         grid.getNodes().removeIf(n -> StringUtils.equals(nc.getNodeName(), n.getName()));
-                        grid.getNodes().add(new NodeDto(nc.getNodeId(), nc.getNodeName(), nc.getNodeColor(), nc.getNodeShape()));
+                        grid.getNodes().add(new NodeDto(nc.getNodeId(), nc.getNodeName(), nc.getNodeColor()));
                     });
         }
         else if (event instanceof HierarchyCreated)

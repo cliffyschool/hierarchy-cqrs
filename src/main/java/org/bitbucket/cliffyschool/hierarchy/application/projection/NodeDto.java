@@ -6,13 +6,11 @@ public class NodeDto {
     private UUID nodeId;
     private String name;
     private String color;
-    private String shape;
 
-    public NodeDto(UUID nodeId, String name, String color, String shape) {
+    public NodeDto(UUID nodeId, String name, String color) {
         this.nodeId = nodeId;
         this.name = name;
         this.color = color;
-        this.shape = shape;
     }
 
     public String getName() {
@@ -21,10 +19,6 @@ public class NodeDto {
 
     public String getColor() {
         return color;
-    }
-
-    public String getShape() {
-        return shape;
     }
 
     public void setName(String name) {
@@ -43,7 +37,4 @@ public class NodeDto {
         this.nodeId = nodeId;
     }
 
-    public void setShape(String shape) {
-        this.shape = shape;
-    }
 }

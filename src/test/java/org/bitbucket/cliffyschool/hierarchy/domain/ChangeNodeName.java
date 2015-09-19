@@ -26,7 +26,7 @@ public class ChangeNodeName {
     public void setUp() {
         hierarchy = Hierarchy.apply(new HierarchyCreated(UUID.randomUUID()));
         nodeId = UUID.randomUUID();
-        hierarchy.apply(new NodeCreated(hierarchy.getId(), hierarchy.getVersionId(), nodeId, "originalNodeName", "", ""));
+        hierarchy.apply(new NodeCreated(hierarchy.getId(), hierarchy.getVersionId(), nodeId, "originalNodeName", ""));
         changeNodeNameCommand = new ChangeNodeNameCommand(nodeId, hierarchy.getVersionId(), "newName");
     }
 
@@ -43,7 +43,7 @@ public class ChangeNodeName {
     @Test
     public void whenNodeWithSameNameAlreadyExistsThenExceptionShouldBeThrown() {
         String nameOfExistingNode = "nameOfExistingNode";
-        hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, UUID.randomUUID(), nameOfExistingNode, "", ""));
+        hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, UUID.randomUUID(), nameOfExistingNode, ""));
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("exists"));
