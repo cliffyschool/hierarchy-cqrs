@@ -2,13 +2,13 @@ package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
-import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +24,7 @@ public class CreateNode {
     public void setUp() {
         hierarchy = Hierarchy.apply(new HierarchyCreated(UUID.randomUUID()));
         nodeId = UUID.randomUUID();
-        createNodeCommand = new CreateNodeCommand(nodeId, hierarchy.getVersionId(), "blue", nodeId.toString());
+        createNodeCommand = new CreateNodeCommand(nodeId, hierarchy.getVersionId(), nodeId.toString(), "blue");
     }
 
     @Test
@@ -54,7 +54,18 @@ public class CreateNode {
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("exists"));
 
-        hierarchy.createNode(new CreateNodeCommand(nodeId, 1L, "blue", nameOfExistingNode));
+        hierarchy.createNode(new CreateNodeCommand(nodeId, 1L, nameOfExistingNode, "blue"));
+    }
+
+    @Test
+    public void whenChildNodeCreatedThenChildCountShouldIncrement(){
+        UUID childNodeId = UUID.randomUUID();
+        hierarchy.apply(new NodeCreated(hierarchy.getId(), hierarchy.getVersionId(), nodeId, "parent", "blue"));
+
+        hierarchy.apply(hierarchy.createNode(new CreateNodeCommand(childNodeId, hierarchy.getVersionId(), "child", "red", Optional.of(nodeId))).getEvents());
+
+        Node parent = hierarchy.nodeById(nodeId);
+        assertThat(parent.getChildCount()).isEqualTo(1);
     }
 }
 

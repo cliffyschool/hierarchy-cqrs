@@ -1,7 +1,6 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
@@ -15,6 +14,7 @@ public class Hierarchy {
 
     private Map<String, Node> nodesByName = Maps.newHashMap();
     private Map<UUID,Node> nodesById = Maps.newHashMap();
+    private ListMultimap<UUID,UUID> childrenByParentId = ArrayListMultimap.create();
     private UUID id;
     private long versionId;
 
@@ -38,6 +38,10 @@ public class Hierarchy {
         Node node = new Node(event.getNodeId(), event.getNodeName(), event.getNodeColor());
         nodesByName.put(node.getName(), node);
         nodesById.put(node.getId(), node);
+        event.getParentNodeId().ifPresent(pId -> {
+            childrenByParentId.put(pId, node.getId());
+            nodesById.get(pId).incrementChildCount();
+        });
         versionId = event.getVersionId();
     }
 
@@ -66,7 +70,8 @@ public class Hierarchy {
     public EventStream createNode(CreateNodeCommand command) {
         if (nodesByName.containsKey(command.getNodeName()))
             throw new RuntimeException(String.format("Node with name '%s' already exists.", command.getNodeName()));
-        return EventStream.from(Lists.newArrayList(new NodeCreated(id, versionId, command.getNodeId(), command.getNodeName(), "blue")));
+        return EventStream.from(Lists.newArrayList(new NodeCreated(id, versionId, command.getNodeId(), command.getNodeName(),
+                                                                    "blue", command.getParentNodeId())));
     }
 
     public EventStream changeNodeName(ChangeNodeNameCommand command) {

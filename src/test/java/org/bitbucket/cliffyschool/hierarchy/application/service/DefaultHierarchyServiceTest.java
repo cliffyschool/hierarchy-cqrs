@@ -38,7 +38,7 @@ public class DefaultHierarchyServiceTest {
     @Test
     public void whenNodeIsCreatedThenGridViewShouldIncludeIt(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "", "myNode"));
+        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "myNode", ""));
 
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
@@ -50,7 +50,7 @@ public class DefaultHierarchyServiceTest {
     @Test
     public void whenNodeIsRenamedThenGridViewShouldReflectIt(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "","myNode"));
+        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "myNode", ""));
         hierarchyService.changeNodeName(hierarchyId, new ChangeNodeNameCommand(nodeId, 2L, "newName"));
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
@@ -61,7 +61,7 @@ public class DefaultHierarchyServiceTest {
     @Test
     public void whenNodeIsCreatedThenHierarchyViewShouldReflectIt(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "", "myNode"));
+        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "myNode", ""));
 
         Optional<Hierarchy> hierarchyView = hierarchyService.getHierarchy(hierarchyId);
 
@@ -73,7 +73,7 @@ public class DefaultHierarchyServiceTest {
     @Test
     public void whenNodeIsRenamedThenHierarchyViewShouldReflectIt(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "","myNode"));
+        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "myNode", ""));
         hierarchyService.changeNodeName(hierarchyId, new ChangeNodeNameCommand(nodeId, 2L, "newName"));
         Optional<Hierarchy> hierarchy = hierarchyService.getHierarchy(hierarchyId);
 

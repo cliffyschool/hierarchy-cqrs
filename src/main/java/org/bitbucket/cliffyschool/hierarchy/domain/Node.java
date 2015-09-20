@@ -6,6 +6,7 @@ public class Node {
     private final UUID id;
     private String name;
     private String color;
+    private int childCount;
 
     public Node(UUID id, String name, String color) {
         this.id = id;
@@ -27,5 +28,13 @@ public class Node {
 
     public String getColor() {
         return color;
+    }
+
+    public int getChildCount() {
+        return childCount;
+    }
+
+    public void incrementChildCount() {
+        childCount++;
     }
 }
