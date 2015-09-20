@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.application.projection;
+package org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;

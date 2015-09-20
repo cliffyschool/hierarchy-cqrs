@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.application.projection;
+package org.bitbucket.cliffyschool.hierarchy.application.projection.grid;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -46,7 +46,7 @@ public class HierarchyAsGridProjectionUpdater implements ProjectionHandler {
         HierarchyAsGrid grid = gridProjection.find(nodeCreated.getHierarchyId())
                 .orElseThrow(() -> new RuntimeException("Can't find hierarchy."));
 
-        grid.getNodes().add(new FlatNode(nodeCreated.getNodeId(), nodeCreated.getNodeName(), nodeCreated.getNodeColor()));
+        grid.getRows().add(new NodeAsRow(nodeCreated.getNodeId(), nodeCreated.getNodeName(), nodeCreated.getNodeColor()));
 
         gridProjection.write(grid.getId(), grid);
     }
@@ -54,7 +54,7 @@ public class HierarchyAsGridProjectionUpdater implements ProjectionHandler {
      private static void writeNodeNameChanged(NodeNameChanged nodeNameChanged, HierarchyAsGridProjection gridProjection){
         HierarchyAsGrid grid = gridProjection.find(nodeNameChanged.getHierarchyId())
                 .orElseThrow(() -> new RuntimeException("Can't find hierarchy."));
-         grid.getNodes().stream()
+         grid.getRows().stream()
                  .filter(n -> n.getNodeId().equals(nodeNameChanged.getNodeId())).findAny()
                  .ifPresent(n -> n.setName(nodeNameChanged.getNewName()));
          gridProjection.write(grid.getId(), grid);

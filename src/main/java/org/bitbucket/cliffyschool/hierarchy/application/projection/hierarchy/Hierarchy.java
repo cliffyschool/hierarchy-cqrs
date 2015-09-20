@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.application.projection;
+package org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy;
 
 import java.util.List;
 import java.util.UUID;

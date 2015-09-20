@@ -1,6 +1,5 @@
 package org.bitbucket.cliffyschool.hierarchy.event;
 
-import org.bitbucket.cliffyschool.hierarchy.application.projection.Node;
 
 import java.util.Optional;
 import java.util.UUID;

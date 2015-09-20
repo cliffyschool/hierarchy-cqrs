@@ -1,7 +1,7 @@
 package org.bitbucket.cliffyschool.hierarchy.application.service;
 
-import org.bitbucket.cliffyschool.hierarchy.application.projection.Hierarchy;
-import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGrid;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;

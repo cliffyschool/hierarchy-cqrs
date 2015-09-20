@@ -1,28 +1,33 @@
-package org.bitbucket.cliffyschool.hierarchy.application.projection;
+package org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
 import java.util.UUID;
 
-public class FlatNode {
-    private UUID nodeId;
+public class Node  {
+   private UUID nodeId;
     private String name;
     private String color;
+    private List<Node> children;
 
-    public FlatNode(UUID nodeId, String name, String color) {
+    public Node(UUID nodeId, String name, String color) {
         this.nodeId = nodeId;
         this.name = name;
         this.color = color;
+        children = Lists.newArrayList();
     }
 
     public String getName() {
         return name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public void setColor(String color) {
@@ -37,4 +42,7 @@ public class FlatNode {
         this.nodeId = nodeId;
     }
 
+    public List<Node> getChildren(){
+        return children;
+    }
 }

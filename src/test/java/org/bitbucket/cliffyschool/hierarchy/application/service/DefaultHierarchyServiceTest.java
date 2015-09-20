@@ -1,7 +1,13 @@
 package org.bitbucket.cliffyschool.hierarchy.application.service;
 
 import com.google.common.collect.Lists;
-import org.bitbucket.cliffyschool.hierarchy.application.projection.*;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjectionUpdater;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.Hierarchy;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.HierarchyProjection;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.HierarchyProjectionUpdater;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.Node;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.InMemoryHierarchyRepository;
@@ -44,7 +50,7 @@ public class DefaultHierarchyServiceTest {
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
         assertThat(hierarchyAsGrid).isPresent();
-        assertThat(hierarchyAsGrid.get().getNodes()).extracting("name").contains("myNode");
+        assertThat(hierarchyAsGrid.get().getRows()).extracting("name").contains("myNode");
 
     }
 
@@ -55,7 +61,7 @@ public class DefaultHierarchyServiceTest {
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
         assertThat(hierarchyAsGrid).isPresent();
-        assertThat(hierarchyAsGrid.get().getNodes()).extracting("name").contains("newName");
+        assertThat(hierarchyAsGrid.get().getRows()).extracting("name").contains("newName");
     }
 
     @Test
