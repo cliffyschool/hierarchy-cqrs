@@ -3,10 +3,8 @@ package org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.bitbucket.cliffyschool.hierarchy.event.Event;
-import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
-import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
-import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
+import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
+import org.bitbucket.cliffyschool.hierarchy.event.*;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.ProjectionHandler;
 
@@ -47,7 +45,7 @@ public class HierarchyProjectionUpdater implements ProjectionHandler{
 
     private static void writeNodeCreated(NodeCreated e, HierarchyProjection projection){
         Hierarchy hierarchy = projection.find(e.getHierarchyId())
-                .orElseThrow(() -> new RuntimeException("Can't find hierarchy"));
+                .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", e.getHierarchyId()));
 
         Node newNode = new Node(e.getNodeId(), e.getNodeName(), e.getNodeColor());
         if (e.getParentNodeId().isPresent()) {
@@ -70,7 +68,7 @@ public class HierarchyProjectionUpdater implements ProjectionHandler{
 
     private static void writeNodeNameChanged(NodeNameChanged e, HierarchyProjection projection){
         Hierarchy hierarchy = projection.find(e.getHierarchyId())
-                .orElseThrow(() -> new RuntimeException("Can't find hierarchy"));
+                .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", e.getHierarchyId()));
 
         hierarchy.getNodes().stream().filter(n -> n.getNodeId().equals(e.getNodeId())).findFirst()
                         .ifPresent(n -> n.setName(e.getNewName()));

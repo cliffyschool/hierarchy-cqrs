@@ -34,7 +34,8 @@ public class Node {
         return childCount;
     }
 
-    public void incrementChildCount() {
-        childCount++;
+    public <T> void applyPropertyValueChange(String propertyName, T newValue) {
+       if ("childcount".equalsIgnoreCase(propertyName))
+           childCount = (Integer)newValue;
     }
 }

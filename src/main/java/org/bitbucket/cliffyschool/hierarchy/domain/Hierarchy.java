@@ -2,12 +2,15 @@ package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import com.google.common.collect.*;
 import javaslang.Tuple2;
+import org.bitbucket.cliffyschool.hierarchy.application.exception.NameAlreadyUsedException;
+import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,8 +18,8 @@ import java.util.UUID;
 public class Hierarchy {
 
     private Map<String, Node> nodesByName = Maps.newHashMap();
-    private Map<UUID,Node> nodesById = Maps.newHashMap();
-    private ListMultimap<UUID,UUID> childrenByParentId = ArrayListMultimap.create();
+    private Map<UUID, Node> nodesById = Maps.newHashMap();
+    private ListMultimap<UUID, UUID> childrenByParentId = ArrayListMultimap.create();
     private UUID id;
     private long versionId;
 
@@ -25,65 +28,6 @@ public class Hierarchy {
         versionId = 1L;
     }
 
-    public void apply(Iterable<Event> events) {
-        events.forEach(this::apply);
-    }
-
-    public void apply(Event event){
-        if (event instanceof NodeCreated)
-            apply((NodeCreated)event);
-        else if (event instanceof NodeNameChanged)
-            apply((NodeNameChanged)event);
-    }
-
-    public void apply(NodeCreated event) {
-        Node node = new Node(event.getNodeId(), event.getNodeName(), event.getNodeColor());
-        nodesByName.put(node.getName(), node);
-        nodesById.put(node.getId(), node);
-        event.getParentNodeId().ifPresent(pId -> {
-            childrenByParentId.put(pId, node.getId());
-            nodesById.get(pId).incrementChildCount();
-        });
-        versionId = event.getVersionId();
-    }
-
-    public void apply(NodeNameChanged event)
-    {
-        Optional.ofNullable(nodesById.get(event.getNodeId()))
-                .map(n -> new Tuple2<>(n.getName(), new Node(n.getId(), event.getNewName(), n.getColor())))
-                .ifPresent(n -> {
-                    nodesById.put(n._2.getId(), n._2);
-                    nodesByName.put(n._2.getName(), n._2);
-                    nodesByName.remove(n._1);
-                    versionId = event.getVersionId();
-                });
-    }
-
-    public static Hierarchy apply(HierarchyCreated event)
-    {
-        return new Hierarchy(event.getHierarchyId());
-    }
-
-    public static EventStream createNewHierarchy(CreateHierarchyCommand command){
-        return EventStream.from(Lists.newArrayList(new HierarchyCreated(command.getHierarchyId())));
-    }
-
-    public EventStream createNode(CreateNodeCommand command) {
-        if (nodesByName.containsKey(command.getNodeName()))
-            throw new RuntimeException(String.format("Node with name '%s' already exists.", command.getNodeName()));
-        return EventStream.from(Lists.newArrayList(new NodeCreated(id, command.getNodeId(), command.getNodeName(),
-                                                                    "blue", command.getParentNodeId())));
-    }
-
-    public EventStream changeNodeName(ChangeNodeNameCommand command) {
-
-        if (nodesByName.containsKey(command.getNewName()))
-            throw new RuntimeException(String.format("Node with name '%s' already exists.", command.getNewName()));
-        if (!nodesById.containsKey(command.getNodeId()))
-            throw new RuntimeException(String.format("Node '%s' not found.", command.getNodeId()));
-
-        return EventStream.from(Lists.newArrayList(new NodeNameChanged(id, command.getNodeId(), command.getNewName())));
-    }
     public Node nodeById(UUID nodeId) {
         return nodesById.get(nodeId);
     }
@@ -94,5 +38,79 @@ public class Hierarchy {
 
     public UUID getId() {
         return id;
+    }
+
+    public static EventStream createNewHierarchy(CreateHierarchyCommand command) {
+        return EventStream.from(Lists.newArrayList(new HierarchyCreated(command.getHierarchyId())));
+    }
+
+    public EventStream createNode(CreateNodeCommand command) {
+        if (nodesByName.containsKey(command.getNodeName()))
+            throw new NameAlreadyUsedException("Node", command.getNodeName());
+
+        EventStream eventStream = EventStream.from(new NodeCreated( id, command.getNodeId(), command.getNodeName(),
+                                                                    command.getColor(), command.getParentNodeId()));
+
+        Optional<Node> parentNode = command.getParentNodeId().map(nodesById::get);
+        parentNode.ifPresent(parent -> {
+            eventStream.append(new NodePropertyValueChanged<>(  id, command.getParentNodeId().get(),"ChildCount",
+                                                                parent.getChildCount() + 1, parent.getChildCount()));
+        });
+
+        return eventStream;
+    }
+
+    public EventStream changeNodeName(ChangeNodeNameCommand command) {
+        if (nodesByName.containsKey(command.getNewName()))
+            throw new NameAlreadyUsedException("Node", command.getNewName());
+        if (!nodesById.containsKey(command.getNodeId()))
+            throw new ObjectNotFoundException("Node", command.getNodeId());
+
+        return EventStream.from(Lists.newArrayList(new NodeNameChanged(id, command.getNodeId(), command.getNewName())));
+    }
+
+    public void apply(Event event) {
+        if (event instanceof NodeCreated)
+            apply((NodeCreated) event);
+        else if (event instanceof NodeNameChanged)
+            apply((NodeNameChanged) event);
+        else if (event instanceof NodePropertyValueChanged)
+            apply((NodePropertyValueChanged<?>) event);
+    }
+
+    public void apply(NodeCreated event) {
+        Node node = new Node(event.getNodeId(), event.getNodeName(), event.getNodeColor());
+        nodesByName.put(node.getName(), node);
+        nodesById.put(node.getId(), node);
+        event.getParentNodeId().ifPresent(pId -> {
+            childrenByParentId.put(pId, node.getId());
+        });
+        versionId = event.getVersionId();
+    }
+
+    public void apply(NodePropertyValueChanged<?> event) {
+        Node node = Optional.ofNullable(nodesById.get(event.getNodeId()))
+                .orElseThrow(() -> new ObjectNotFoundException("Node", event.getNodeId()));
+        node.applyPropertyValueChange(event.getPropertyName(), event.getNewValue());
+        versionId = event.getVersionId();
+    }
+
+    public void apply(NodeNameChanged event) {
+        Optional.ofNullable(nodesById.get(event.getNodeId()))
+                .map(n -> new Tuple2<>(n.getName(), new Node(n.getId(), event.getNewName(), n.getColor())))
+                .ifPresent(n -> {
+                    nodesById.put(n._2.getId(), n._2);
+                    nodesByName.put(n._2.getName(), n._2);
+                    nodesByName.remove(n._1);
+                    versionId = event.getVersionId();
+                });
+    }
+
+    public static Hierarchy apply(HierarchyCreated event) {
+        return new Hierarchy(event.getHierarchyId());
+    }
+
+    public void apply(Iterable<Event> events) {
+        events.forEach(this::apply);
     }
 }

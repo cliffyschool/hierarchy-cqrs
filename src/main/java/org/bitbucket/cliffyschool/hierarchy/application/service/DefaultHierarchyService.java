@@ -1,5 +1,6 @@
 package org.bitbucket.cliffyschool.hierarchy.application.service;
 
+import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.HierarchyProjection;
@@ -43,10 +44,10 @@ public class DefaultHierarchyService implements HierarchyService {
 
     @Override
     public void createNewNode(UUID hierarchyId, CreateNodeCommand createNodeCommand) {
-        Hierarchy hier = hierarchyRepository.findById(hierarchyId)
-                .orElseThrow(() -> new RuntimeException(String.format("Hierarchy %s not found.", hierarchyId)));
+        Hierarchy hierarchy = hierarchyRepository.findById(hierarchyId)
+                .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", hierarchyId));
 
-        EventStream stream = hier.createNode(createNodeCommand);
+        EventStream stream = hierarchy.createNode(createNodeCommand);
         hierarchyRepository.store(hierarchyId, stream, createNodeCommand.getBaseVersionId());
 
         fakeBus.publish(stream);
@@ -55,7 +56,7 @@ public class DefaultHierarchyService implements HierarchyService {
     @Override
     public void changeNodeName(UUID hierarchyId, ChangeNodeNameCommand changeNodeNameCommand) {
         Hierarchy hier = hierarchyRepository.findById(hierarchyId)
-                .orElseThrow(() -> new RuntimeException(String.format("Hierarchy %s not found.", hierarchyId)));
+                .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", hierarchyId));
 
         EventStream stream = hier.changeNodeName(changeNodeNameCommand);
         hierarchyRepository.store(hierarchyId, stream, changeNodeNameCommand.getBaseVersionId());
