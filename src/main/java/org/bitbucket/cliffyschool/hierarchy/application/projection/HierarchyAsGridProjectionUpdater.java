@@ -46,7 +46,6 @@ public class HierarchyAsGridProjectionUpdater implements ProjectionHandler {
         HierarchyAsGrid grid = gridProjection.find(nodeCreated.getHierarchyId())
                 .orElseThrow(() -> new RuntimeException("Can't find hierarchy."));
 
-        grid.getNodes().removeIf(n -> StringUtils.equals(nodeCreated.getNodeName(), n.getName()));
         grid.getNodes().add(new FlatNode(nodeCreated.getNodeId(), nodeCreated.getNodeName(), nodeCreated.getNodeColor()));
 
         gridProjection.write(grid.getId(), grid);

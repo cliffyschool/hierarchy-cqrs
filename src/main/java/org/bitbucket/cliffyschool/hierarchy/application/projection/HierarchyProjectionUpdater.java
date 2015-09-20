@@ -10,8 +10,10 @@ import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.ProjectionHandler;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.function.BiConsumer;
 
 public class HierarchyProjectionUpdater implements ProjectionHandler{
@@ -47,8 +49,22 @@ public class HierarchyProjectionUpdater implements ProjectionHandler{
         Hierarchy hierarchy = projection.find(e.getHierarchyId())
                 .orElseThrow(() -> new RuntimeException("Can't find hierarchy"));
 
-        hierarchy.getNodes().removeIf(n -> n.getNodeId().equals(e.getHierarchyId()));
-        hierarchy.getNodes().add(new Node(e.getNodeId(), e.getNodeName(), e.getNodeColor()));
+        Node newNode = new Node(e.getNodeId(), e.getNodeName(), e.getNodeColor());
+        if (e.getParentNodeId().isPresent()) {
+            Stack<Node> nodeStack = new Stack<>();
+            hierarchy.getNodes().stream().forEach(nodeStack::push);
+            List<Node> nodeList = Lists.newArrayList();
+            collectNodes(nodeStack, nodeList);
+
+            nodeList.stream()
+                    .filter(n -> n.getNodeId().equals(e.getParentNodeId().get()))
+                    .findFirst()
+                    .ifPresent(parent -> parent.getChildren().add(newNode));
+        }
+        else {
+            hierarchy.getNodes().add(newNode);
+        }
+
         projection.write(hierarchy.getId(), hierarchy);
     }
 
@@ -59,5 +75,17 @@ public class HierarchyProjectionUpdater implements ProjectionHandler{
         hierarchy.getNodes().stream().filter(n -> n.getNodeId().equals(e.getNodeId())).findFirst()
                         .ifPresent(n -> n.setName(e.getNewName()));
         projection.write(hierarchy.getId(), hierarchy);
+    }
+
+    private static void collectNodes(Stack<Node> nodeStack, List<Node> nodeList){
+        if (nodeStack.empty())
+            return;
+
+        Node node = nodeStack.pop();
+
+        nodeList.add(node);
+        node.getChildren().stream().forEach(nodeStack::push);
+
+        collectNodes(nodeStack, nodeList);
     }
 }
