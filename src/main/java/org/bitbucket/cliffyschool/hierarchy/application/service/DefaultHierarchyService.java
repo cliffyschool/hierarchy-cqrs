@@ -2,6 +2,7 @@ package org.bitbucket.cliffyschool.hierarchy.application.service;
 
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGridProjection;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyProjection;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
@@ -16,14 +17,17 @@ import java.util.UUID;
 public class DefaultHierarchyService implements HierarchyService {
 
     private final HierarchyAsGridProjection gridProjection;
+    private HierarchyProjection hierarchyProjection;
     private InMemoryHierarchyRepository hierarchyRepository;
     private FakeBus fakeBus;
 
     public DefaultHierarchyService(InMemoryHierarchyRepository hierarchyRepository,
+                                   HierarchyProjection hierarchyProjection,
                                    HierarchyAsGridProjection gridProjection,
                                    FakeBus fakeBus)
     {
         this.hierarchyRepository = hierarchyRepository;
+        this.hierarchyProjection = hierarchyProjection;
         this.gridProjection = gridProjection;
         this.fakeBus = fakeBus;
     }
@@ -62,5 +66,10 @@ public class DefaultHierarchyService implements HierarchyService {
     @Override
     public Optional<HierarchyAsGrid> getHierarchyAsGrid(UUID hierarchyId) {
         return gridProjection.find(hierarchyId);
+    }
+
+    @Override
+    public Optional<org.bitbucket.cliffyschool.hierarchy.application.projection.Hierarchy> getHierarchy(UUID hierarchyId) {
+        return hierarchyProjection.find(hierarchyId);
     }
 }

@@ -2,20 +2,19 @@ package org.bitbucket.cliffyschool.hierarchy.application.projection;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cliffyschool.hierarchy.event.Event;
 import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.ProjectionHandler;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-public class HierarchyAsGridProjectionUpdater {
+public class HierarchyAsGridProjectionUpdater implements ProjectionHandler {
 
     private static Map<Class<? extends Event>,BiConsumer<? super Event,HierarchyAsGridProjection>> handlers =
             new ImmutableMap.Builder<Class<? extends Event>,BiConsumer<? super Event, HierarchyAsGridProjection>>()
@@ -44,19 +43,21 @@ public class HierarchyAsGridProjectionUpdater {
     }
 
     private static void writeNodeCreated(NodeCreated nodeCreated, HierarchyAsGridProjection gridProjection){
-        gridProjection.find(nodeCreated.getHierarchyId())
-        .ifPresent(grid -> {
-            grid.getNodes().removeIf(n -> StringUtils.equals(nodeCreated.getNodeName(), n.getName()));
-            grid.getNodes().add(new FlatNode(nodeCreated.getNodeId(), nodeCreated.getNodeName(), nodeCreated.getNodeColor()));
-        });
+        HierarchyAsGrid grid = gridProjection.find(nodeCreated.getHierarchyId())
+                .orElseThrow(() -> new RuntimeException("Can't find hierarchy."));
+
+        grid.getNodes().removeIf(n -> StringUtils.equals(nodeCreated.getNodeName(), n.getName()));
+        grid.getNodes().add(new FlatNode(nodeCreated.getNodeId(), nodeCreated.getNodeName(), nodeCreated.getNodeColor()));
+
+        gridProjection.write(grid.getId(), grid);
     }
 
      private static void writeNodeNameChanged(NodeNameChanged nodeNameChanged, HierarchyAsGridProjection gridProjection){
-        gridProjection.find(nodeNameChanged.getHierarchyId())
-        .ifPresent(grid -> {
-            Optional<FlatNode> existing = grid.getNodes().stream()
-                    .filter(n -> n.getNodeId().equals(nodeNameChanged.getNodeId())).findAny();
-            existing.ifPresent(n -> n.setName(nodeNameChanged.getNewName()));
-        });
+        HierarchyAsGrid grid = gridProjection.find(nodeNameChanged.getHierarchyId())
+                .orElseThrow(() -> new RuntimeException("Can't find hierarchy."));
+         grid.getNodes().stream()
+                 .filter(n -> n.getNodeId().equals(nodeNameChanged.getNodeId())).findAny()
+                 .ifPresent(n -> n.setName(nodeNameChanged.getNewName()));
+         gridProjection.write(grid.getId(), grid);
     }
 }

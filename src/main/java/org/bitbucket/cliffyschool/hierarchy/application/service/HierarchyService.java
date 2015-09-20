@@ -1,5 +1,6 @@
 package org.bitbucket.cliffyschool.hierarchy.application.service;
 
+import org.bitbucket.cliffyschool.hierarchy.application.projection.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
@@ -15,4 +16,6 @@ public interface HierarchyService {
     void changeNodeName(UUID hierarchyId, ChangeNodeNameCommand changeNodeNameCommand);
 
     Optional<HierarchyAsGrid> getHierarchyAsGrid(UUID id);
+
+    Optional<Hierarchy> getHierarchy(UUID hierarchyId);
 }

@@ -8,13 +8,13 @@ import java.util.UUID;
 
 public class DummyProjectionStore <T> {
 
-    private Map<UUID, T> viewsById = Maps.newHashMap();
+    private Map<UUID, T> objectsById = Maps.newHashMap();
 
     public void write(UUID id, T viewDto){
-        viewsById.put(id, viewDto);
+        objectsById.put(id, viewDto);
     }
 
     public Optional<T> find(UUID id) {
-        return Optional.ofNullable(viewsById.get(id));
+        return Optional.ofNullable(objectsById.get(id));
     }
 }
