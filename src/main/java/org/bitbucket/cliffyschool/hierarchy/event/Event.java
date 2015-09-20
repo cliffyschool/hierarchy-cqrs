@@ -4,13 +4,13 @@ import java.util.UUID;
 
 public abstract class Event {
     private UUID hierarchyId;
-    private long versionId;
+    protected long versionId;
 
-    public Event(UUID id, long versionId)
+    public Event(UUID id)
     {
         hierarchyId = id;
-        this.versionId = versionId;
     }
+
     public long getVersionId() {
         return versionId;
     }
@@ -19,5 +19,5 @@ public abstract class Event {
         return hierarchyId;
     }
 
-    public abstract Event copy(long newVersionId);
+    public abstract Event withVersionId(long newVersionId);
 }

@@ -6,8 +6,8 @@ public class NodeNameChanged extends Event {
     private final String newName;
     private final UUID nodeId;
 
-    public NodeNameChanged(UUID hierarchyId, long versionId, UUID nodeId, String newName) {
-        super(hierarchyId, versionId);
+    public NodeNameChanged(UUID hierarchyId, UUID nodeId, String newName) {
+        super(hierarchyId);
         this.nodeId = nodeId;
         this.newName = newName;
     }
@@ -21,7 +21,9 @@ public class NodeNameChanged extends Event {
     }
 
     @Override
-    public Event copy(long newVersionId) {
-        return new NodeNameChanged(getHierarchyId(), newVersionId, nodeId, newName);
+    public Event withVersionId(long newVersionId) {
+        NodeNameChanged nodeNameChanged = new NodeNameChanged(getHierarchyId(), nodeId, newName);
+        nodeNameChanged.versionId = newVersionId;
+        return nodeNameChanged;
     }
 }

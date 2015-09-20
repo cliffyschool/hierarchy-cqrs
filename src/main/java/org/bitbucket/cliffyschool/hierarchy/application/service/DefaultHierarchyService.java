@@ -36,7 +36,7 @@ public class DefaultHierarchyService implements HierarchyService {
     @Override
     public void createNewHierarchy(CreateHierarchyCommand createHierarchyCommand) {
         EventStream stream = Hierarchy.createNewHierarchy(createHierarchyCommand);
-        this.hierarchyRepository.store(createHierarchyCommand.getHierarchyId(), stream);
+        this.hierarchyRepository.store(createHierarchyCommand.getHierarchyId(), stream, 0L);
 
         fakeBus.publish(stream);
     }
@@ -47,7 +47,7 @@ public class DefaultHierarchyService implements HierarchyService {
                 .orElseThrow(() -> new RuntimeException(String.format("Hierarchy %s not found.", hierarchyId)));
 
         EventStream stream = hier.createNode(createNodeCommand);
-        hierarchyRepository.store(hierarchyId, stream);
+        hierarchyRepository.store(hierarchyId, stream, createNodeCommand.getBaseVersionId());
 
         fakeBus.publish(stream);
     }
@@ -58,7 +58,7 @@ public class DefaultHierarchyService implements HierarchyService {
                 .orElseThrow(() -> new RuntimeException(String.format("Hierarchy %s not found.", hierarchyId)));
 
         EventStream stream = hier.changeNodeName(changeNodeNameCommand);
-        hierarchyRepository.store(hierarchyId, stream);
+        hierarchyRepository.store(hierarchyId, stream, changeNodeNameCommand.getBaseVersionId());
 
         fakeBus.publish(stream);
     }

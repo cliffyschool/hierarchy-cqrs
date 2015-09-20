@@ -5,9 +5,9 @@ import java.util.UUID;
 public class CreateHierarchyCommand extends Command {
     private UUID hierarchyId;
     private String name;
+    private long baseVersionId;
 
-    public CreateHierarchyCommand(UUID hierarchyId, long baseVersionId, String name) {
-        super(baseVersionId);
+    public CreateHierarchyCommand(UUID hierarchyId, String name) {
         this.hierarchyId = hierarchyId;
         this.name = name;
     }
@@ -18,5 +18,9 @@ public class CreateHierarchyCommand extends Command {
 
     public String getName() {
         return name;
+    }
+
+    public long getBaseVersionId() {
+        return baseVersionId;
     }
 }

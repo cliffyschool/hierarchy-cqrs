@@ -4,15 +4,13 @@ import java.util.UUID;
 
 public class HierarchyCreated extends Event {
     public HierarchyCreated(UUID id) {
-        this(id, 1L);
-    }
-
-    private HierarchyCreated(UUID id, long newVersionId){
-        super(id, newVersionId);
+        super(id);
     }
 
     @Override
-    public Event copy(long newVersionId) {
-        return new HierarchyCreated(getHierarchyId(), newVersionId);
+    public Event withVersionId(long newVersionId) {
+        HierarchyCreated hc = new HierarchyCreated(getHierarchyId());
+        hc.versionId = newVersionId;
+        return hc;
     }
 }

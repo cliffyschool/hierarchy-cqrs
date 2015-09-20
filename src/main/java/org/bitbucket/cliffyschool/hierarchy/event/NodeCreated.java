@@ -1,5 +1,7 @@
 package org.bitbucket.cliffyschool.hierarchy.event;
 
+import org.bitbucket.cliffyschool.hierarchy.application.projection.Node;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -9,17 +11,16 @@ public class NodeCreated extends Event {
     private UUID nodeId;
     private Optional<UUID> parentNodeId;
 
-    public NodeCreated(UUID hierarchyId, long versionId, UUID nodeId, String nodeName, String nodeColor, Optional<UUID> parentNodeId) {
-        super(hierarchyId, versionId);
+    public NodeCreated(UUID hierarchyId, UUID nodeId, String nodeName, String nodeColor, Optional<UUID> parentNodeId) {
+        super(hierarchyId);
         this.nodeId = nodeId;
         this.nodeName = nodeName;
         this.nodeColor = nodeColor;
         this.parentNodeId = parentNodeId;
     }
 
-
-    public NodeCreated(UUID hierarchyId, long versionId, UUID nodeId, String nodeName, String nodeColor) {
-       this(hierarchyId,versionId,nodeId,nodeName,nodeColor, Optional.empty());
+    public NodeCreated(UUID hierarchyId, UUID nodeId, String nodeName, String nodeColor) {
+       this(hierarchyId,nodeId,nodeName,nodeColor, Optional.empty());
     }
 
     public String getNodeName() {
@@ -39,8 +40,10 @@ public class NodeCreated extends Event {
     }
 
     @Override
-    public Event copy(long newVersionId) {
-        return new NodeCreated(getHierarchyId(), newVersionId, nodeId, nodeName, nodeColor, parentNodeId);
+    public Event withVersionId(long newVersionId) {
+        NodeCreated nc = new NodeCreated(getHierarchyId(), nodeId, nodeName, nodeColor, parentNodeId);
+        nc.versionId = newVersionId;
+        return nc;
     }
 
     public Optional<UUID> getParentNodeId() {

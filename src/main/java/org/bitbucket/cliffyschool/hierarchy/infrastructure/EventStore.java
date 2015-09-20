@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface EventStore {
 
-    void store(UUID aggregateId, EventStream stream);
+    void store(UUID aggregateId, EventStream stream, long versionBeingModified);
 
     List<Event> getEvents(UUID aggregateId);
 

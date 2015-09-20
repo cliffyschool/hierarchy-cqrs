@@ -70,7 +70,7 @@ public class Hierarchy {
     public EventStream createNode(CreateNodeCommand command) {
         if (nodesByName.containsKey(command.getNodeName()))
             throw new RuntimeException(String.format("Node with name '%s' already exists.", command.getNodeName()));
-        return EventStream.from(Lists.newArrayList(new NodeCreated(id, versionId, command.getNodeId(), command.getNodeName(),
+        return EventStream.from(Lists.newArrayList(new NodeCreated(id, command.getNodeId(), command.getNodeName(),
                                                                     "blue", command.getParentNodeId())));
     }
 
@@ -81,7 +81,7 @@ public class Hierarchy {
         if (!nodesById.containsKey(command.getNodeId()))
             throw new RuntimeException(String.format("Node '%s' not found.", command.getNodeId()));
 
-        return EventStream.from(Lists.newArrayList(new NodeNameChanged(id, versionId, command.getNodeId(), command.getNewName())));
+        return EventStream.from(Lists.newArrayList(new NodeNameChanged(id, command.getNodeId(), command.getNewName())));
     }
     public Node nodeById(UUID nodeId) {
         return nodesById.get(nodeId);

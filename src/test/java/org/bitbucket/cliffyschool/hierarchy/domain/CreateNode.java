@@ -49,7 +49,7 @@ public class CreateNode {
     @Test
     public void whenDuplicateNodeNameIsUsedThenCreateNodeShouldThrowAnException() {
         String nameOfExistingNode = "nameOfExistingNode";
-        hierarchy.apply(new NodeCreated(hierarchy.getId(), 1L, UUID.randomUUID(), nameOfExistingNode, ""));
+        hierarchy.apply(new NodeCreated(hierarchy.getId(), UUID.randomUUID(), nameOfExistingNode, ""));
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("exists"));
@@ -60,7 +60,7 @@ public class CreateNode {
     @Test
     public void whenChildNodeCreatedThenChildCountShouldIncrement(){
         UUID childNodeId = UUID.randomUUID();
-        hierarchy.apply(new NodeCreated(hierarchy.getId(), hierarchy.getVersionId(), nodeId, "parent", "blue"));
+        hierarchy.apply(new NodeCreated(hierarchy.getId(), nodeId, "parent", "blue"));
 
         hierarchy.apply(hierarchy.createNode(new CreateNodeCommand(childNodeId, hierarchy.getVersionId(), "child", "red", Optional.of(nodeId))).getEvents());
 

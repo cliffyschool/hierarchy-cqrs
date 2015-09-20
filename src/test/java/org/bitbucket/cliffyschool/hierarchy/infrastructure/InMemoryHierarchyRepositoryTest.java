@@ -32,16 +32,16 @@ public class InMemoryHierarchyRepositoryTest {
         firstNodeId = UUID.randomUUID();
         List<Event> eventList = Lists.newArrayList(
                 new HierarchyCreated(hierarchyId),
-                new NodeCreated(hierarchyId, 1L, firstNodeId, "node1", ""),
-                new NodeCreated(hierarchyId, 1L, UUID.randomUUID(), "node2", ""),
-                new NodeNameChanged(hierarchyId, 1L, firstNodeId, "Node 1"));
+                new NodeCreated(hierarchyId, firstNodeId, "node1", ""),
+                new NodeCreated(hierarchyId, UUID.randomUUID(), "node2", ""),
+                new NodeNameChanged(hierarchyId, firstNodeId, "Node 1"));
         eventStream = EventStream.from(eventList);
     }
 
 
     @Test
     public void whenHierarchyIsSavedItCanBeFound(){
-        hierarchyRepository.store(hierarchyId, eventStream);
+        hierarchyRepository.store(hierarchyId, eventStream, 0L);
 
         Optional<Hierarchy> found = hierarchyRepository.findById(hierarchyId);
 
@@ -50,7 +50,7 @@ public class InMemoryHierarchyRepositoryTest {
 
     @Test
     public void whenHierarchyIsFoundNodeIsPresent(){
-        hierarchyRepository.store(hierarchyId, eventStream);
+        hierarchyRepository.store(hierarchyId, eventStream, 0L);
 
         Hierarchy found = hierarchyRepository.findById(hierarchyId).get();
 
@@ -59,7 +59,7 @@ public class InMemoryHierarchyRepositoryTest {
 
     @Test
     public void whenHierarchyNodeIsFoundItHasCorrectName(){
-        hierarchyRepository.store(hierarchyId, eventStream);
+        hierarchyRepository.store(hierarchyId, eventStream, 0L);
 
         Hierarchy found = hierarchyRepository.findById(hierarchyId).get();
 
@@ -72,22 +72,22 @@ public class InMemoryHierarchyRepositoryTest {
     @Test
     public void whenEventStreamVersionIsStaleThenStoreShouldThrowException(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId))));
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "nodeName", "nodeColor"))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId))), 0L);
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, nodeId, "nodeName", "nodeColor"))), 1L);
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("updated"));
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "otherNodeName", "nodeColor"))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, nodeId, "otherNodeName", "nodeColor"))), 1L);
     }
 
     @Test
     public void whenVersionIdsAreNotContiguousThenStoreThrowException(){
         UUID nodeId = UUID.randomUUID();
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId))));
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 1L, nodeId, "nodeName", "nodeColor"))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new HierarchyCreated(hierarchyId))), 0L);
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, nodeId, "nodeName", "nodeColor"))), 1L);
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("skip"));
-        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, 3L, nodeId, "otherNodeName", "nodeColor"))));
+        hierarchyRepository.store(hierarchyId, EventStream.from(Lists.newArrayList(new NodeCreated(hierarchyId, nodeId, "otherNodeName", "nodeColor"))), 3L);
     }
 }

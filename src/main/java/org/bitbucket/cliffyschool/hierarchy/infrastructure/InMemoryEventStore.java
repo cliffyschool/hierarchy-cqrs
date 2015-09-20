@@ -18,7 +18,7 @@ public class InMemoryEventStore implements EventStore{
     private ListMultimap<UUID,Event> events = ArrayListMultimap.create();
 
     @Override
-    public void store(UUID aggregateId, EventStream stream) {
+    public void store(UUID aggregateId, EventStream stream, long versionBeingModified) {
         if (stream == null || stream.getEvents().isEmpty())
             return;
 
@@ -29,21 +29,19 @@ public class InMemoryEventStore implements EventStore{
                     .map(Event::getVersionId)
                     .orElse(0L);
 
-            long newStreamVersionId = Iterables.getLast(stream.getEvents()).getVersionId();
-
-            if (lastEventVersionId > 0 && lastEventVersionId >  newStreamVersionId)
+            if (lastEventVersionId > 0 && lastEventVersionId > versionBeingModified)
                 throw new RuntimeException(String.format("Aggregate with id '%s' has been updated since last retrieval.", aggregateId));
 
-            if (lastEventVersionId > 0 && lastEventVersionId < newStreamVersionId)
+            if (lastEventVersionId > 0 && lastEventVersionId < versionBeingModified)
                 throw new RuntimeException(String.format("Invalid version id specified. Are you trying to skip versions?"));
 
-            List<Event> descriptors =
+            List<Event> eventsToSave =
             IntStream.range(0, stream.getEvents().size())
-                    .mapToObj(i -> new Tuple2<>(lastEventVersionId + i + 1, stream.getEvents().get(i)))
-                    .map(tup -> tup._2.copy(tup._1))
+                    .mapToObj(i -> new Tuple2<>(versionBeingModified + i + 1, stream.getEvents().get(i)))
+                    .map(tup -> tup._2.withVersionId(tup._1))
                     .collect(Collectors.toList());
 
-            this.events.putAll(aggregateId, descriptors);
+            this.events.putAll(aggregateId, eventsToSave);
         }
     }
 

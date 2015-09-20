@@ -8,17 +8,18 @@ public class CreateNodeCommand extends Command {
     private final UUID nodeId;
     private String nodeName;
     private Optional<UUID> parentNodeId = Optional.empty();
+    private long baseVersionId;
 
-    public CreateNodeCommand(UUID nodeId, long versionId, String nodeName, String color, Optional<UUID> parentNodeId) {
-        super(versionId);
+    public CreateNodeCommand(UUID nodeId, long baseVersionId, String nodeName, String color, Optional<UUID> parentNodeId) {
         this.nodeId = nodeId;
+        this.baseVersionId = baseVersionId;
         this.nodeName = nodeName;
         this.color = color;
         this.parentNodeId = parentNodeId;
     }
 
-    public CreateNodeCommand(UUID nodeId, long versionId, String nodeName, String color) {
-       this(nodeId, versionId, nodeName, color, Optional.empty());
+    public CreateNodeCommand(UUID nodeId, long baseVersionId, String nodeName, String color) {
+       this(nodeId, baseVersionId, nodeName, color, Optional.empty());
     }
 
     public UUID getNodeId() {
@@ -35,5 +36,9 @@ public class CreateNodeCommand extends Command {
 
     public Optional<UUID> getParentNodeId() {
         return parentNodeId;
+    }
+
+    public long getBaseVersionId() {
+        return baseVersionId;
     }
 }

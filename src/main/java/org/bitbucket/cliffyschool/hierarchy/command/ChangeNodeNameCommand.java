@@ -5,6 +5,7 @@ import java.util.UUID;
 public class ChangeNodeNameCommand extends Command {
     private UUID nodeId;
     private String newName;
+    private long baseVersionId;
 
     public UUID getNodeId() {
         return nodeId;
@@ -15,8 +16,12 @@ public class ChangeNodeNameCommand extends Command {
     }
 
     public ChangeNodeNameCommand(UUID nodeId, long baseVersionId, String newName) {
-        super(baseVersionId);
+        this.baseVersionId = baseVersionId;
         this.nodeId = nodeId;
         this.newName = newName;
+    }
+
+    public long getBaseVersionId() {
+        return baseVersionId;
     }
 }

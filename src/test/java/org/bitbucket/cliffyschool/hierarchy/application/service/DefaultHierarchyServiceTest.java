@@ -31,7 +31,7 @@ public class DefaultHierarchyServiceTest {
     @Before
     public void setUp() {
         hierarchyId = UUID.randomUUID();
-        hierarchyService.createNewHierarchy(new CreateHierarchyCommand(hierarchyId, 0L, "testHierarchy"));
+        hierarchyService.createNewHierarchy(new CreateHierarchyCommand(hierarchyId, "testHierarchy"));
     }
 
 
