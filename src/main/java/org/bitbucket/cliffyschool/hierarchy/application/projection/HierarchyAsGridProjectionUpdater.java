@@ -1,5 +1,6 @@
 package org.bitbucket.cliffyschool.hierarchy.application.projection;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cliffyschool.hierarchy.event.Event;
@@ -9,48 +10,50 @@ import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 public class HierarchyAsGridProjectionUpdater {
 
+    private static ImmutableMap<Class<? extends Event>,BiConsumer<? super Event,HierarchyAsGridProjection>> map =
+            ImmutableMap.<Class<? extends Event>,BiConsumer<? super Event, HierarchyAsGridProjection>>builder()
+            .put(HierarchyCreated.class, (e, p) -> writeHierarchyCreated((HierarchyCreated) e, p))
+                    .put(NodeCreated.class, (e, p) -> writeNodeCreated((NodeCreated) e, p))
+                    .put(NodeNameChanged.class, (e, p) -> writeNodeNameChanged((NodeNameChanged) e, p))
+            .build();
+
     private HierarchyAsGridProjection gridProjection;
 
-    public HierarchyAsGridProjectionUpdater(HierarchyAsGridProjection projection)
-    {
-        this.gridProjection = projection;
+    public HierarchyAsGridProjectionUpdater(HierarchyAsGridProjection gridProjection) {
+        this.gridProjection = gridProjection;
     }
 
     public void write(EventStream stream){
         if (stream == null)
             return;
 
-        stream.getEvents().forEach(this::writeEvent);
+        stream.getEvents().stream()
+                .forEach(event -> Optional.ofNullable(map.get(event.getClass()))
+                        .ifPresent(writer -> writer.accept(event, gridProjection)));
     }
 
-    private void writeEvent(Event event)
-    {
-        if (event instanceof NodeCreated)
-        {
-            NodeCreated nc = (NodeCreated)event;
-            gridProjection.find(event.getHierarchyId())
-                    .ifPresent(grid -> {
-                        grid.getNodes().removeIf(n -> StringUtils.equals(nc.getNodeName(), n.getName()));
-                        grid.getNodes().add(new FlatNode(nc.getNodeId(), nc.getNodeName(), nc.getNodeColor()));
-                    });
-        }
-        else if (event instanceof HierarchyCreated)
-        {
-            HierarchyCreated hc = (HierarchyCreated)event;
-            gridProjection.write(hc.getHierarchyId(), new HierarchyAsGrid(hc.getHierarchyId(), Lists.newArrayList()));
-        }
-        else if (event instanceof NodeNameChanged)
-        {
-            NodeNameChanged nc = (NodeNameChanged)event;
-            gridProjection.find(event.getHierarchyId())
-                    .ifPresent(grid -> {
-                        Optional<FlatNode> existing = grid.getNodes().stream()
-                                .filter(n -> n.getNodeId().equals(nc.getNodeId())).findAny();
-                        existing.ifPresent(n -> n.setName(nc.getNewName()));
-                    });
-        }
+    private static void writeHierarchyCreated(HierarchyCreated hierarchyCreated, HierarchyAsGridProjection gridProjection){
+         gridProjection.write(hierarchyCreated.getHierarchyId(), new HierarchyAsGrid(hierarchyCreated.getHierarchyId(), Lists.newArrayList()));
+    }
+
+    private static void writeNodeCreated(NodeCreated nodeCreated, HierarchyAsGridProjection gridProjection){
+        gridProjection.find(nodeCreated.getHierarchyId())
+        .ifPresent(grid -> {
+            grid.getNodes().removeIf(n -> StringUtils.equals(nodeCreated.getNodeName(), n.getName()));
+            grid.getNodes().add(new FlatNode(nodeCreated.getNodeId(), nodeCreated.getNodeName(), nodeCreated.getNodeColor()));
+        });
+    }
+
+     private static void writeNodeNameChanged(NodeNameChanged nodeNameChanged, HierarchyAsGridProjection gridProjection){
+        gridProjection.find(nodeNameChanged.getHierarchyId())
+        .ifPresent(grid -> {
+            Optional<FlatNode> existing = grid.getNodes().stream()
+                    .filter(n -> n.getNodeId().equals(nodeNameChanged.getNodeId())).findAny();
+            existing.ifPresent(n -> n.setName(nodeNameChanged.getNewName()));
+        });
     }
 }
