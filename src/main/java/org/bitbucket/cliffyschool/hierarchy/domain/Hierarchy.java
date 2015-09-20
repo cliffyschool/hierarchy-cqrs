@@ -1,6 +1,7 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import com.google.common.collect.*;
+import javaslang.Tuple2;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
@@ -8,6 +9,7 @@ import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.*;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Hierarchy {
@@ -47,15 +49,14 @@ public class Hierarchy {
 
     public void apply(NodeNameChanged event)
     {
-        Node existing = nodesById.get(event.getNodeId());
-        if (existing != null)
-        {
-            Node changedNode = new Node(existing.getId(), event.getNewName(), existing.getColor());
-            nodesById.put(changedNode.getId(), changedNode);
-            nodesByName.put(changedNode.getName(), changedNode);
-            nodesByName.remove(existing.getName());
-            versionId = event.getVersionId();
-        }
+        Optional.ofNullable(nodesById.get(event.getNodeId()))
+                .map(n -> new Tuple2<>(n.getName(), new Node(n.getId(), event.getNewName(), n.getColor())))
+                .ifPresent(n -> {
+                    nodesById.put(n._2.getId(), n._2);
+                    nodesByName.put(n._2.getName(), n._2);
+                    nodesByName.remove(n._1);
+                    versionId = event.getVersionId();
+                });
     }
 
     public static Hierarchy apply(HierarchyCreated event)
