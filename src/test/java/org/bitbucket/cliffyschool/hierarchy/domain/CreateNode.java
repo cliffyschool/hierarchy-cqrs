@@ -24,7 +24,7 @@ public class CreateNode {
     public void setUp() {
         hierarchy = Hierarchy.apply(new HierarchyCreated(UUID.randomUUID()));
         nodeId = UUID.randomUUID();
-        createNodeCommand = new CreateNodeCommand(nodeId, hierarchy.getVersionId(), nodeId.toString(), "blue");
+        createNodeCommand = new CreateNodeCommand(nodeId, 0L, nodeId.toString(), "blue");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class CreateNode {
         UUID childNodeId = UUID.randomUUID();
         hierarchy.apply(new NodeCreated(hierarchy.getId(), nodeId, "parent", "blue"));
 
-        hierarchy.apply(hierarchy.createNode(new CreateNodeCommand(childNodeId, hierarchy.getVersionId(), "child", "red", Optional.of(nodeId))).getEvents());
+        hierarchy.apply(hierarchy.createNode(new CreateNodeCommand(childNodeId, 0L, "child", "red", Optional.of(nodeId))).getEvents());
 
         Node parent = hierarchy.nodeById(nodeId);
         assertThat(parent.getChildCount()).isEqualTo(1);

@@ -21,19 +21,13 @@ public class Hierarchy {
     private Map<UUID, Node> nodesById = Maps.newHashMap();
     private ListMultimap<UUID, UUID> childrenByParentId = ArrayListMultimap.create();
     private UUID id;
-    private long versionId;
 
     public Hierarchy(UUID id) {
         this.id = id;
-        versionId = 1L;
     }
 
     public Node nodeById(UUID nodeId) {
         return nodesById.get(nodeId);
-    }
-
-    public long getVersionId() {
-        return versionId;
     }
 
     public UUID getId() {
@@ -85,14 +79,12 @@ public class Hierarchy {
         event.getParentNodeId().ifPresent(pId -> {
             childrenByParentId.put(pId, node.getId());
         });
-        versionId = event.getVersionId();
     }
 
     public void apply(NodePropertyValueChanged<?> event) {
         Node node = Optional.ofNullable(nodesById.get(event.getNodeId()))
                 .orElseThrow(() -> new ObjectNotFoundException("Node", event.getNodeId()));
         node.applyPropertyValueChange(event.getPropertyName(), event.getNewValue());
-        versionId = event.getVersionId();
     }
 
     public void apply(NodeNameChanged event) {
@@ -102,7 +94,6 @@ public class Hierarchy {
                     nodesById.put(n._2.getId(), n._2);
                     nodesByName.put(n._2.getName(), n._2);
                     nodesByName.remove(n._1);
-                    versionId = event.getVersionId();
                 });
     }
 

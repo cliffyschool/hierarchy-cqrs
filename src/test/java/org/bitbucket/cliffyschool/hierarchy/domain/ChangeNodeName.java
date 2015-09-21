@@ -27,7 +27,7 @@ public class ChangeNodeName {
         hierarchy = Hierarchy.apply(new HierarchyCreated(UUID.randomUUID()));
         nodeId = UUID.randomUUID();
         hierarchy.apply(new NodeCreated(hierarchy.getId(), nodeId, "originalNodeName", ""));
-        changeNodeNameCommand = new ChangeNodeNameCommand(nodeId, hierarchy.getVersionId(), "newName");
+        changeNodeNameCommand = new ChangeNodeNameCommand(nodeId, 0L, "newName");
     }
 
     @Test
