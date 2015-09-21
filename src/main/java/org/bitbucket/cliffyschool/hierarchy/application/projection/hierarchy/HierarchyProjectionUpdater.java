@@ -2,7 +2,6 @@ package org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
 import org.bitbucket.cliffyschool.hierarchy.event.*;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
@@ -12,15 +11,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-public class HierarchyProjectionUpdater implements ProjectionHandler{
+public class HierarchyProjectionUpdater implements ProjectionHandler {
 
-    private static Map<Class<? extends Event>,BiConsumer<? super Event,HierarchyProjection>> handlers =
-            new ImmutableMap.Builder<Class<? extends Event>,BiConsumer<? super Event, HierarchyProjection>>()
-                    .put(HierarchyCreated.class, (e, p) -> writeHierarchyCreated((HierarchyCreated) e, p))
-                    .put(NodeCreated.class, (e, p) -> writeNodeCreated((NodeCreated) e, p))
-                    .put(NodeNameChanged.class, (e, p) -> writeNodeNameChanged((NodeNameChanged) e, p))
+    private Map<Class<? extends Event>,Consumer<? super Event>> handlers =
+            new ImmutableMap.Builder<Class<? extends Event>,Consumer<? super Event>>()
+                    .put(HierarchyCreated.class, e -> handle((HierarchyCreated) e))
+                    .put(NodeCreated.class, e -> handle((NodeCreated) e))
+                    .put(NodeNameChanged.class, e -> handle((NodeNameChanged) e))
             .build();
 
     private HierarchyProjection hierarchyProjection;
@@ -30,21 +29,22 @@ public class HierarchyProjectionUpdater implements ProjectionHandler{
     }
 
     @Override
-    public void write(EventStream stream) {
-        if (stream == null)
+    public void write(EventStream eventStream) {
+        if (eventStream == null)
             return;
 
-        stream.getEvents().stream()
+        eventStream.getEvents().stream()
                 .forEach(event -> Optional.ofNullable(handlers.get(event.getClass()))
-                        .ifPresent(writer -> writer.accept(event, hierarchyProjection)));
+                        .ifPresent(handler -> handler.accept(event)));
     }
 
-    private static void writeHierarchyCreated(HierarchyCreated e, HierarchyProjection projection){
-        projection.write(e.getHierarchyId(), new Hierarchy(e.getHierarchyId(), Lists.newArrayList()));
+    private void handle(HierarchyCreated e){
+        HierarchyProjectionKey key = new HierarchyProjectionKey(e.getHierarchyId(), e.g)
+        hierarchyProjection.write(e.getHierarchyId(), new Hierarchy(e.getHierarchyId(), Lists.newArrayList()));
     }
 
-    private static void writeNodeCreated(NodeCreated e, HierarchyProjection projection){
-        Hierarchy hierarchy = projection.find(e.getHierarchyId())
+    private void handle(NodeCreated e){
+        Hierarchy hierarchy = hierarchyProjection.find(e.getHierarchyId())
                 .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", e.getHierarchyId()));
 
         Node newNode = new Node(e.getNodeId(), e.getNodeName(), e.getNodeColor());
@@ -63,16 +63,16 @@ public class HierarchyProjectionUpdater implements ProjectionHandler{
             hierarchy.getNodes().add(newNode);
         }
 
-        projection.write(hierarchy.getId(), hierarchy);
+        hierarchyProjection.write(hierarchy.getId(), hierarchy);
     }
 
-    private static void writeNodeNameChanged(NodeNameChanged e, HierarchyProjection projection){
-        Hierarchy hierarchy = projection.find(e.getHierarchyId())
+    private void handle(NodeNameChanged e){
+        Hierarchy hierarchy = hierarchyProjection.find(e.getHierarchyId())
                 .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", e.getHierarchyId()));
 
         hierarchy.getNodes().stream().filter(n -> n.getNodeId().equals(e.getNodeId())).findFirst()
                         .ifPresent(n -> n.setName(e.getNewName()));
-        projection.write(hierarchy.getId(), hierarchy);
+        hierarchyProjection.write(hierarchy.getId(), hierarchy);
     }
 
     private static void collectNodes(Stack<Node> nodeStack, List<Node> nodeList){
