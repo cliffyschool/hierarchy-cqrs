@@ -4,6 +4,7 @@ import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFound
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.HierarchyProjection;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.HierarchyProjectionKey;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
@@ -71,6 +72,6 @@ public class DefaultHierarchyService implements HierarchyService {
 
     @Override
     public Optional<org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.Hierarchy> getHierarchy(UUID hierarchyId) {
-        return hierarchyProjection.find(hierarchyId);
+        return hierarchyProjection.find(new HierarchyProjectionKey(hierarchyId, null));
     }
 }

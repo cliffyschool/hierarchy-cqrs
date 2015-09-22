@@ -10,13 +10,3 @@ public class HierarchyProjection extends DummyProjectionStore<HierarchyProjectio
 
 }
 
-class HierarchyProjectionKey
-{
-    private UUID hierarchyId;
-    private UUID nodeId;
-
-    public HierarchyProjectionKey(UUID hierarchyId, UUID nodeId) {
-        this.hierarchyId = hierarchyId;
-        this.nodeId = nodeId;
-    }
-}

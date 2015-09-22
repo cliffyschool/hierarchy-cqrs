@@ -39,12 +39,12 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
     }
 
     private void handle(HierarchyCreated e){
-        HierarchyProjectionKey key = new HierarchyProjectionKey(e.getHierarchyId(), e.g)
-        hierarchyProjection.write(e.getHierarchyId(), new Hierarchy(e.getHierarchyId(), Lists.newArrayList()));
+//        HierarchyProjectionKey key = new HierarchyProjectionKey(e.getHierarchyId(), e.g)
+//        hierarchyProjection.write(new HierarchyProjectionKey(e.getHierarchyId(),, new Hierarchy(e.getHierarchyId(), Lists.newArrayList()));
     }
 
     private void handle(NodeCreated e){
-        Hierarchy hierarchy = hierarchyProjection.find(e.getHierarchyId())
+        Hierarchy hierarchy = hierarchyProjection.find(new HierarchyProjectionKey(e.getHierarchyId(), e.getNodeId()))
                 .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", e.getHierarchyId()));
 
         Node newNode = new Node(e.getNodeId(), e.getNodeName(), e.getNodeColor());
@@ -63,16 +63,16 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
             hierarchy.getNodes().add(newNode);
         }
 
-        hierarchyProjection.write(hierarchy.getId(), hierarchy);
+        hierarchyProjection.write(new HierarchyProjectionKey(e.getHierarchyId(), e.getNodeId()), hierarchy);
     }
 
     private void handle(NodeNameChanged e){
-        Hierarchy hierarchy = hierarchyProjection.find(e.getHierarchyId())
+        Hierarchy hierarchy = hierarchyProjection.find(new HierarchyProjectionKey(e.getHierarchyId(), e.getNodeId()))
                 .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", e.getHierarchyId()));
 
         hierarchy.getNodes().stream().filter(n -> n.getNodeId().equals(e.getNodeId())).findFirst()
                         .ifPresent(n -> n.setName(e.getNewName()));
-        hierarchyProjection.write(hierarchy.getId(), hierarchy);
+        hierarchyProjection.write(new HierarchyProjectionKey(e.getHierarchyId(), e.getNodeId()), hierarchy);
     }
 
     private static void collectNodes(Stack<Node> nodeStack, List<Node> nodeList){
