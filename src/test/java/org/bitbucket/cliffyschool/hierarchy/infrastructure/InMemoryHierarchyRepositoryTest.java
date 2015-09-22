@@ -34,7 +34,7 @@ public class InMemoryHierarchyRepositoryTest {
                 new HierarchyCreated(hierarchyId),
                 new NodeCreated(hierarchyId, firstNodeId, "node1", ""),
                 new NodeCreated(hierarchyId, UUID.randomUUID(), "node2", ""),
-                new NodeNameChanged(hierarchyId, firstNodeId, "Node 1"));
+                new NodeNameChanged(hierarchyId, firstNodeId, Optional.empty(), "Node 1"));
         eventStream = EventStream.from(eventList);
     }
 

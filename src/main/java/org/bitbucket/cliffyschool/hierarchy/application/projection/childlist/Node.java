@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy;
+package org.bitbucket.cliffyschool.hierarchy.application.projection.childlist;
 
 import com.google.common.collect.Lists;
 

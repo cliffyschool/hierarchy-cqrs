@@ -1,7 +1,7 @@
 package org.bitbucket.cliffyschool.hierarchy.application.service;
 
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
-import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.Hierarchy;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
@@ -17,5 +17,5 @@ public interface HierarchyService {
 
     Optional<HierarchyAsGrid> getHierarchyAsGrid(UUID id);
 
-    Optional<Hierarchy> getHierarchy(UUID hierarchyId);
+    Optional<ChildList> getChildList(UUID hierarchyId, Optional<UUID> parentNodeId);
 }

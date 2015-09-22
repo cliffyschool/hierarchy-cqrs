@@ -60,7 +60,12 @@ public class Hierarchy {
         if (!nodesById.containsKey(command.getNodeId()))
             throw new ObjectNotFoundException("Node", command.getNodeId());
 
-        return EventStream.from(Lists.newArrayList(new NodeNameChanged(id, command.getNodeId(), command.getNewName())));
+        // TODO: replace with parentsByChildIds map
+        Optional<UUID> parentId = childrenByParentId.entries().stream()
+                .filter(e -> e.getValue().equals(command.getNodeId())).findFirst()
+                .map(Map.Entry::getKey);
+
+        return EventStream.from(Lists.newArrayList(new NodeNameChanged(id, command.getNodeId(), parentId, command.getNewName())));
     }
 
     public void apply(Event event) {
