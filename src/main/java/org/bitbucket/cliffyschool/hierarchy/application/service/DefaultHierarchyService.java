@@ -1,9 +1,11 @@
 package org.bitbucket.cliffyschool.hierarchy.application.service;
 
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjectionKey;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
-import org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.HierarchyProjection;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
@@ -18,17 +20,17 @@ import java.util.UUID;
 public class DefaultHierarchyService implements HierarchyService {
 
     private final HierarchyAsGridProjection gridProjection;
-    private HierarchyProjection hierarchyProjection;
+    private ChildListProjection childListProjection;
     private InMemoryHierarchyRepository hierarchyRepository;
     private FakeBus fakeBus;
 
     public DefaultHierarchyService(InMemoryHierarchyRepository hierarchyRepository,
-                                   HierarchyProjection hierarchyProjection,
+                                   ChildListProjection childListProjection,
                                    HierarchyAsGridProjection gridProjection,
                                    FakeBus fakeBus)
     {
         this.hierarchyRepository = hierarchyRepository;
-        this.hierarchyProjection = hierarchyProjection;
+        this.childListProjection = childListProjection;
         this.gridProjection = gridProjection;
         this.fakeBus = fakeBus;
     }
@@ -45,7 +47,7 @@ public class DefaultHierarchyService implements HierarchyService {
     @Override
     public void createNewNode(UUID hierarchyId, CreateNodeCommand createNodeCommand) {
         Hierarchy hierarchy = hierarchyRepository.findById(hierarchyId)
-                .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", hierarchyId));
+                .orElseThrow(() -> new ObjectNotFoundException("ChildList", hierarchyId));
 
         EventStream stream = hierarchy.createNode(createNodeCommand);
         hierarchyRepository.store(hierarchyId, stream, createNodeCommand.getBaseVersionId());
@@ -56,7 +58,7 @@ public class DefaultHierarchyService implements HierarchyService {
     @Override
     public void changeNodeName(UUID hierarchyId, ChangeNodeNameCommand changeNodeNameCommand) {
         Hierarchy hier = hierarchyRepository.findById(hierarchyId)
-                .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", hierarchyId));
+                .orElseThrow(() -> new ObjectNotFoundException("ChildList", hierarchyId));
 
         EventStream stream = hier.changeNodeName(changeNodeNameCommand);
         hierarchyRepository.store(hierarchyId, stream, changeNodeNameCommand.getBaseVersionId());
@@ -70,7 +72,7 @@ public class DefaultHierarchyService implements HierarchyService {
     }
 
     @Override
-    public Optional<org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy.Hierarchy> getHierarchy(UUID hierarchyId) {
-        return hierarchyProjection.find(hierarchyId);
+    public Optional<ChildList> getChildList(UUID hierarchyId, Optional<UUID> parentNodeId) {
+        return childListProjection.find(new ChildListProjectionKey(hierarchyId, parentNodeId));
     }
 }

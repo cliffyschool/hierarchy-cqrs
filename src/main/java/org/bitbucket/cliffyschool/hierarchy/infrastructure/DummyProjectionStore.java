@@ -6,15 +6,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-public class DummyProjectionStore <T> {
+public class DummyProjectionStore <K,T> {
 
-    private Map<UUID, T> objectsById = Maps.newHashMap();
+    private Map<K, T> objectsById = Maps.newHashMap();
 
-    public void write(UUID id, T viewDto){
+    public void write(K id, T viewDto){
         objectsById.put(id, viewDto);
     }
 
-    public Optional<T> find(UUID id) {
+    public Optional<T> find(K id) {
         return Optional.ofNullable(objectsById.get(id));
     }
 }

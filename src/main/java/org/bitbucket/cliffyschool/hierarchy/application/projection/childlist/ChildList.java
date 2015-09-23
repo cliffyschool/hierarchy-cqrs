@@ -1,13 +1,13 @@
-package org.bitbucket.cliffyschool.hierarchy.application.projection.hierarchy;
+package org.bitbucket.cliffyschool.hierarchy.application.projection.childlist;
 
 import java.util.List;
 import java.util.UUID;
 
-public class Hierarchy {
+public class ChildList {
     private UUID id;
     private List<Node> nodes;
 
-    public Hierarchy(UUID id, List<Node> nodes)
+    public ChildList(UUID id, List<Node> nodes)
     {
         this.id = id;
         this.nodes = nodes;
