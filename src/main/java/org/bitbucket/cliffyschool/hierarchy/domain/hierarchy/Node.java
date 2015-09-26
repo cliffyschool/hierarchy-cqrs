@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.domain;
+package org.bitbucket.cliffyschool.hierarchy.domain.hierarchy;
 
 import java.util.UUID;
 

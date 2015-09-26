@@ -1,6 +1,7 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.hierarchy.Node;
 import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
 import org.junit.Before;

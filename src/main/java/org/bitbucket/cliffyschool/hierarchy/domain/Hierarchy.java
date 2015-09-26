@@ -7,10 +7,10 @@ import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFound
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.hierarchy.Node;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
