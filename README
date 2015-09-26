@@ -1,1 +1,1 @@
-Simple hierarchy/node domain with CQRS and event sourcing.
+Simple hierarchy/node domain with CQRS, but without event sourcing.
