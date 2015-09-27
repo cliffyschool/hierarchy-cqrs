@@ -26,7 +26,4 @@ public abstract class AggregateRoot {
     public EventStream getChangeEvents(){
         return changeEvents;
     }
-
-    public abstract Event creationEvent();
-
 }

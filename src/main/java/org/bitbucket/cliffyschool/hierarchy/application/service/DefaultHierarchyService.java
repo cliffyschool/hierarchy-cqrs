@@ -44,26 +44,24 @@ public class DefaultHierarchyService implements HierarchyService {
 
     @Override
     public void createNewHierarchy(CreateHierarchyCommand createHierarchyCommand) {
-        EventStream stream = EventStream.from(new HierarchyCreated(createHierarchyCommand.getHierarchyId()));
-        // TODO: build view update events
-        Hierarchy hierarchy = new Hierarchy(createHierarchyCommand.getHierarchyId());
+        Hierarchy hierarchy = Hierarchy.createHierarchy(createHierarchyCommand.getHierarchyId());
         this.hierarchyRepository.store(createHierarchyCommand.getHierarchyId(), hierarchy, 0);
 
-        fakeBus.publish(stream);
+        fakeBus.publish(hierarchy.getChangeEvents());
     }
 
     @Override
-    public void createNewNode(UUID hierarchyId, CreateNodeCommand createNodeCommand) {
-        Hierarchy hierarchy = hierarchyRepository.findById(hierarchyId)
-                .orElseThrow(() -> new ObjectNotFoundException("ChildList", hierarchyId));
+    public void createNewNode(CreateNodeCommand createNodeCommand) {
+        Hierarchy hierarchy = hierarchyRepository.findById(createNodeCommand.getHierarchyId())
+                .orElseThrow(() -> new ObjectNotFoundException("ChildList", createNodeCommand.getHierarchyId()));
 
-        Node node = new Node(   createNodeCommand.getNodeId(), hierarchyId, createNodeCommand.getNodeName(),
-                                createNodeCommand.getColor());
+        Node node = Node.createNode(createNodeCommand);
         hierarchy.addNode(createNodeCommand.getParentNodeId(), node);
-        hierarchyRepository.store(hierarchyId, hierarchy, hierarchy.getVersionId());
+
+        hierarchyRepository.store(hierarchy.getId(), hierarchy, hierarchy.getVersionId());
         nodeRepository.store(node.getId(), node, node.getVersionId());
 
-        EventStream eventStream = EventStream.from(node.creationEvent());
+        EventStream eventStream = EventStream.from(node.getChangeEvents().getEvents());
         eventStream.append(hierarchy.getChangeEvents());
         fakeBus.publish(eventStream);
     }

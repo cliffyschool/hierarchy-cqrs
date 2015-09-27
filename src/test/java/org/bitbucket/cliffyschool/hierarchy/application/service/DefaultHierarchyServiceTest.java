@@ -47,7 +47,7 @@ public class DefaultHierarchyServiceTest {
 
     @Test
     public void whenNodeIsCreatedThenGridViewShouldIncludeIt(){
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "myNode", ""));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
 
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
@@ -58,7 +58,7 @@ public class DefaultHierarchyServiceTest {
 
     @Test
     public void whenNodeIsRenamedThenGridViewShouldReflectIt(){
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "myNode", ""));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
         hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 2L, "newName"));
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
@@ -68,7 +68,7 @@ public class DefaultHierarchyServiceTest {
 
     @Test
     public void whenRootNodeIsCreatedThenChildListShouldReflectIt(){
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "rootNode", ""));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "rootNode", ""));
 
         Optional<ChildList> hierarchyView = hierarchyService.getChildList(hierarchyId, Optional.empty());
 
@@ -81,9 +81,9 @@ public class DefaultHierarchyServiceTest {
     public void whenNodeIsCreatedAsGrandChildThenChildListViewShouldReflectIt(){
         UUID childId = UUID.randomUUID();
         UUID grandChildId = UUID.randomUUID();
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "parent", "blue", Optional.empty()));
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(childId, 2L, "child", "blue", Optional.of(nodeId)));
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(grandChildId, 3L, "grandchild", "blue", Optional.of(childId)));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "parent", "blue", Optional.empty()));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, childId, 2L, "child", "blue", Optional.of(nodeId)));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, grandChildId, 3L, "grandchild", "blue", Optional.of(childId)));
 
 
         ChildList list = hierarchyService.getChildList(hierarchyId, Optional.empty()).get();
@@ -104,7 +104,7 @@ public class DefaultHierarchyServiceTest {
 
     @Test
     public void whenNodeIsRenamedThenHierarchyViewShouldReflectIt(){
-        hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "myNode", ""));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
         hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 2L, "newName"));
         Optional<ChildList> hierarchy = hierarchyService.getChildList(hierarchyId, Optional.empty());
 

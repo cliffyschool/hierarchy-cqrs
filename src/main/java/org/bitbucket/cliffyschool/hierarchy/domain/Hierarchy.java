@@ -22,9 +22,10 @@ public class Hierarchy extends AggregateRoot {
         super(id);
     }
 
-    @Override
-    public Event creationEvent() {
-        return new HierarchyCreated(id);
+    public static Hierarchy createHierarchy(UUID id) {
+        Hierarchy hierarchy = new Hierarchy(id);
+        hierarchy.changeEvents.append(new HierarchyCreated(id));
+        return hierarchy;
     }
 
     public Node nodeById(UUID nodeId) {
@@ -41,39 +42,18 @@ public class Hierarchy extends AggregateRoot {
 
         nodesById.put(node.getId(), node);
         nodesByName.put(node.getName(), node);
-        parentId.ifPresent(pId -> childrenByParentId.put(pId, node.getId()));
-
-        EventStream eventStream = EventStream.from(Lists.newArrayList());
-        eventStream.append(new NodeAddedToHierarchy(id, parentId, node.getId()));
-        parentNode.ifPresent(parent -> {
-            eventStream.append(new NodePropertyValueChanged<>(  id, parentId.get(),"ChildCount",
-                                                                parent.getChildCount() + 1, parent.getChildCount()));
+        parentNode.ifPresent(pNode -> {
+            childrenByParentId.put(pNode.getId(), node.getId());
+            pNode.changeChildCount(pNode.getChildCount() + 1);
+            changeEvents.append(pNode.getChangeEvents());
         });
 
-        apply(eventStream.getEvents());
-
-        changeEvents.append(eventStream);
+        changeEvents.append(new NodeAddedToHierarchy(id, parentId, node.getId()));
     }
 
-
-    private void apply(Event event) {
-        if (event instanceof NodeCreated)
-            apply((NodeCreated) event);
-        else if (event instanceof NodeNameChanged)
-            apply((NodeNameChanged) event);
-        else if (event instanceof NodePropertyValueChanged)
-            apply((NodePropertyValueChanged<?>) event);
-    }
-
-
-    private void apply(NodePropertyValueChanged<?> event) {
-        Node node = Optional.ofNullable(nodesById.get(event.getNodeId()))
-                .orElseThrow(() -> new ObjectNotFoundException("Node", event.getNodeId()));
-        node.applyPropertyValueChange(event.getPropertyName(), event.getNewValue());
-    }
-
-    private void apply(Iterable<Event> events) {
-        events.forEach(this::apply);
+    void changeNodeName(String oldName, String newName){
+        Node node = nodesByName.remove(oldName);
+        nodesByName.put(newName, node);
     }
 
     public Optional<UUID> getParentId(UUID nodeId) {

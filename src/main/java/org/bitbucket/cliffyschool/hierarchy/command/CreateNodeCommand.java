@@ -4,13 +4,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CreateNodeCommand extends Command {
+    private UUID hierarchyId;
     private final String color;
     private final UUID nodeId;
     private String nodeName;
     private Optional<UUID> parentNodeId = Optional.empty();
     private long baseVersionId;
 
-    public CreateNodeCommand(UUID nodeId, long baseVersionId, String nodeName, String color, Optional<UUID> parentNodeId) {
+    public CreateNodeCommand(UUID hierarchyId, UUID nodeId, long baseVersionId, String nodeName, String color,
+                             Optional<UUID> parentNodeId) {
+        this.hierarchyId = hierarchyId;
         this.nodeId = nodeId;
         this.baseVersionId = baseVersionId;
         this.nodeName = nodeName;
@@ -18,8 +21,12 @@ public class CreateNodeCommand extends Command {
         this.parentNodeId = parentNodeId;
     }
 
-    public CreateNodeCommand(UUID nodeId, long baseVersionId, String nodeName, String color) {
-       this(nodeId, baseVersionId, nodeName, color, Optional.empty());
+    public CreateNodeCommand(UUID hierarchyId, UUID nodeId, long baseVersionId, String nodeName, String color) {
+       this(hierarchyId, nodeId, baseVersionId, nodeName, color, Optional.empty());
+    }
+
+    public UUID getHierarchyId() {
+        return hierarchyId;
     }
 
     public UUID getNodeId() {

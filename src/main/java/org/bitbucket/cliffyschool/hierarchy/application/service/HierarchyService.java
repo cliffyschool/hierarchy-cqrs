@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface HierarchyService {
 
     void createNewHierarchy(CreateHierarchyCommand createHierarchyCommand);
-    void createNewNode(UUID hierarchyId, CreateNodeCommand createNodeCommand);
+    void createNewNode(CreateNodeCommand createNodeCommand);
     void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand);
 
     Optional<HierarchyAsGrid> getHierarchyAsGrid(UUID id);

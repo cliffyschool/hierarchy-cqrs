@@ -1,9 +1,11 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.event.Event;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
+import org.bitbucket.cliffyschool.hierarchy.event.NodePropertyValueChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
 
 import java.util.Optional;
@@ -22,9 +24,12 @@ public class Node extends AggregateRoot{
         this.hierarchyId = hierarchyId;
     }
 
-    @Override
-    public Event creationEvent() {
-        return new NodeCreated(hierarchyId, id, name, color);
+    public static Node createNode(CreateNodeCommand createNodeCommand) {
+        Node node = new Node(createNodeCommand.getNodeId(),createNodeCommand.getHierarchyId(),
+                                createNodeCommand.getNodeName(), createNodeCommand.getColor());
+
+        node.changeEvents.append(new NodeCreated(node.getHierarchyId(), node.getId(), node.getName(), node.getColor()));
+        return node;
     }
 
     public String getName() {
@@ -39,14 +44,19 @@ public class Node extends AggregateRoot{
         return childCount;
     }
 
-    public <T> void applyPropertyValueChange(String propertyName, T newValue) {
-       if ("childcount".equalsIgnoreCase(propertyName))
-           childCount = (Integer)newValue;
+    public UUID getHierarchyId() { return hierarchyId; }
+
+    public <T> void changeChildCount(int childCount) {
+        int previousChildCount = this.childCount;
+        this.childCount = childCount;
+        changeEvents.append(new NodePropertyValueChanged<Integer>(hierarchyId, id, "ChildCount",previousChildCount, childCount));
     }
 
     public void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand, Hierarchy hierarchy) {
+        String oldName = name;
         name = changeNodeNameCommand.getNewName();
         Optional<UUID> parentId = hierarchy.getParentId(changeNodeNameCommand.getNodeId());
+        hierarchy.changeNodeName(oldName, name);
         changeEvents.append(new NodeNameChanged(hierarchyId, id, parentId, name));
     }
 }
