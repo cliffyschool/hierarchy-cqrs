@@ -8,26 +8,16 @@ public class NodeCreated extends Event {
     private String nodeName;
     private String nodeColor;
     private UUID nodeId;
-    private Optional<UUID> parentNodeId;
 
-    public NodeCreated(UUID hierarchyId, UUID nodeId, String nodeName, String nodeColor, Optional<UUID> parentNodeId) {
+    public NodeCreated(UUID hierarchyId, UUID nodeId, String nodeName, String nodeColor) {
         super(hierarchyId);
         this.nodeId = nodeId;
         this.nodeName = nodeName;
         this.nodeColor = nodeColor;
-        this.parentNodeId = parentNodeId;
-    }
-
-    public NodeCreated(UUID hierarchyId, UUID nodeId, String nodeName, String nodeColor) {
-       this(hierarchyId,nodeId,nodeName,nodeColor, Optional.empty());
     }
 
     public String getNodeName() {
         return nodeName;
-    }
-
-    public void setNodeName(String nodeName) {
-        this.nodeName = nodeName;
     }
 
     public String getNodeColor() {
@@ -40,12 +30,8 @@ public class NodeCreated extends Event {
 
     @Override
     public Event withVersionId(long newVersionId) {
-        NodeCreated nc = new NodeCreated(getHierarchyId(), nodeId, nodeName, nodeColor, parentNodeId);
+        NodeCreated nc = new NodeCreated(getHierarchyId(), nodeId, nodeName, nodeColor);
         nc.versionId = newVersionId;
         return nc;
-    }
-
-    public Optional<UUID> getParentNodeId() {
-        return parentNodeId;
     }
 }

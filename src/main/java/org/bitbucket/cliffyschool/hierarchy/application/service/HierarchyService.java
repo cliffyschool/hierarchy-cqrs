@@ -13,7 +13,7 @@ public interface HierarchyService {
 
     void createNewHierarchy(CreateHierarchyCommand createHierarchyCommand);
     void createNewNode(UUID hierarchyId, CreateNodeCommand createNodeCommand);
-    void changeNodeName(UUID hierarchyId, ChangeNodeNameCommand changeNodeNameCommand);
+    void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand);
 
     Optional<HierarchyAsGrid> getHierarchyAsGrid(UUID id);
 

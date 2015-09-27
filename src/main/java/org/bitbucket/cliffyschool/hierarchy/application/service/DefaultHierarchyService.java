@@ -8,9 +8,12 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Chi
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.Node;
+import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
+import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
-import org.bitbucket.cliffyschool.hierarchy.domain.InMemoryHierarchyRepository;
+import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 
@@ -21,15 +24,18 @@ public class DefaultHierarchyService implements HierarchyService {
 
     private final HierarchyAsGridProjection gridProjection;
     private ChildListProjection childListProjection;
-    private InMemoryHierarchyRepository hierarchyRepository;
+    private HierarchyRepository hierarchyRepository;
+    private NodeRepository nodeRepository;
     private FakeBus fakeBus;
 
-    public DefaultHierarchyService(InMemoryHierarchyRepository hierarchyRepository,
+    public DefaultHierarchyService(HierarchyRepository hierarchyRepository,
+                                   NodeRepository nodeRepository,
                                    ChildListProjection childListProjection,
                                    HierarchyAsGridProjection gridProjection,
                                    FakeBus fakeBus)
     {
         this.hierarchyRepository = hierarchyRepository;
+        this.nodeRepository = nodeRepository;
         this.childListProjection = childListProjection;
         this.gridProjection = gridProjection;
         this.fakeBus = fakeBus;
@@ -38,8 +44,10 @@ public class DefaultHierarchyService implements HierarchyService {
 
     @Override
     public void createNewHierarchy(CreateHierarchyCommand createHierarchyCommand) {
-        EventStream stream = Hierarchy.createNewHierarchy(createHierarchyCommand);
-        this.hierarchyRepository.store(createHierarchyCommand.getHierarchyId(), stream, 0L);
+        EventStream stream = EventStream.from(new HierarchyCreated(createHierarchyCommand.getHierarchyId()));
+        // TODO: build view update events
+        Hierarchy hierarchy = new Hierarchy(createHierarchyCommand.getHierarchyId());
+        this.hierarchyRepository.store(createHierarchyCommand.getHierarchyId(), hierarchy, 0);
 
         fakeBus.publish(stream);
     }
@@ -49,21 +57,28 @@ public class DefaultHierarchyService implements HierarchyService {
         Hierarchy hierarchy = hierarchyRepository.findById(hierarchyId)
                 .orElseThrow(() -> new ObjectNotFoundException("ChildList", hierarchyId));
 
-        EventStream stream = hierarchy.createNode(createNodeCommand);
-        hierarchyRepository.store(hierarchyId, stream, createNodeCommand.getBaseVersionId());
+        Node node = new Node(   createNodeCommand.getNodeId(), hierarchyId, createNodeCommand.getNodeName(),
+                                createNodeCommand.getColor());
+        hierarchy.addNode(createNodeCommand.getParentNodeId(), node);
+        hierarchyRepository.store(hierarchyId, hierarchy, hierarchy.getVersionId());
+        nodeRepository.store(node.getId(), node, node.getVersionId());
 
-        fakeBus.publish(stream);
+        EventStream eventStream = EventStream.from(node.creationEvent());
+        eventStream.append(hierarchy.getChangeEvents());
+        fakeBus.publish(eventStream);
     }
 
     @Override
-    public void changeNodeName(UUID hierarchyId, ChangeNodeNameCommand changeNodeNameCommand) {
-        Hierarchy hier = hierarchyRepository.findById(hierarchyId)
-                .orElseThrow(() -> new ObjectNotFoundException("ChildList", hierarchyId));
+    public void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand) {
+        Node node = nodeRepository.findById(changeNodeNameCommand.getNodeId())
+                .orElseThrow(() -> new ObjectNotFoundException("Node", changeNodeNameCommand.getNodeId()));
+        Hierarchy hierarchy = hierarchyRepository.findById(changeNodeNameCommand.getHierarchyId())
+                .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", changeNodeNameCommand.getHierarchyId()));
 
-        EventStream stream = hier.changeNodeName(changeNodeNameCommand);
-        hierarchyRepository.store(hierarchyId, stream, changeNodeNameCommand.getBaseVersionId());
+        node.changeNodeName(changeNodeNameCommand, hierarchy);
+        nodeRepository.store(changeNodeNameCommand.getNodeId(), node, node.getVersionId());
 
-        fakeBus.publish(stream);
+        fakeBus.publish(node.getChangeEvents());
     }
 
     @Override

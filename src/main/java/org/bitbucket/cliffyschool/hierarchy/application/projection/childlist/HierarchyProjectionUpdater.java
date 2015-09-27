@@ -17,6 +17,7 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
             new ImmutableMap.Builder<Class<? extends Event>,Consumer<? super Event>>()
                     .put(HierarchyCreated.class, e -> handle((HierarchyCreated) e))
                     .put(NodeCreated.class, e -> handle((NodeCreated) e))
+                    .put(NodeAddedToHierarchy.class, e -> handle((NodeAddedToHierarchy)e))
                     .put(NodeNameChanged.class, e -> handle((NodeNameChanged) e))
             .build();
 
@@ -41,14 +42,33 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
         childListProjection.write(key, new ChildList(e.getHierarchyId(), Lists.newArrayList()));
     }
 
-    private void handle(NodeCreated e){
-
-        ChildListProjectionKey key = new ChildListProjectionKey(e.getHierarchyId(), e.getParentNodeId());
+    private void handle(NodeCreated e) {
+        ChildListProjectionKey key = new ChildListProjectionKey(e.getHierarchyId(), Optional.empty());
         ChildList childList = childListProjection.find(key)
-                .orElse(new ChildList(e.getNodeId(), Lists.newArrayList()));
+                .orElse(new ChildList(null, Lists.newArrayList()));
 
         Node newNode = new Node(e.getNodeId(), e.getNodeName(), e.getNodeColor());
         childList.getNodes().add(newNode);
+
+        childListProjection.write(key, childList);
+    }
+
+    private void handle(NodeAddedToHierarchy e){
+
+        ChildListProjectionKey key = new ChildListProjectionKey(e.getHierarchyId(), e.getParentNodeId());
+        ChildList childList = childListProjection.find(key)
+                .orElse(new ChildList(e.getParentNodeId().orElse(null), Lists.newArrayList()));
+
+        ChildList rootChildList = childListProjection.find(new ChildListProjectionKey(e.getHierarchyId(), Optional.empty()))
+                .orElseThrow(() -> new ObjectNotFoundException("ChildList", e.getHierarchyId()));
+
+        Node node = rootChildList.getNodes().stream()
+                .filter(n -> n.getNodeId().equals(e.getChildNodeId()))
+                .findFirst()
+                .orElseThrow(() -> new ObjectNotFoundException("Node", e.getChildNodeId()));
+
+        childList.getNodes().add(node);
+        rootChildList.getNodes().remove(node);
 
         childListProjection.write(key, childList);
     }

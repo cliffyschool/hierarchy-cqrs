@@ -10,8 +10,9 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Hie
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Node;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.domain.InMemoryHierarchyRepository;
+import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +27,8 @@ public class DefaultHierarchyServiceTest {
     private HierarchyAsGridProjection gridProjection = new HierarchyAsGridProjection();
     private ChildListProjection childListProjection = new ChildListProjection();
     HierarchyService hierarchyService = new DefaultHierarchyService(
-            new InMemoryHierarchyRepository(),
+            new HierarchyRepository(),
+            new NodeRepository(),
             childListProjection,
             gridProjection,
             new FakeBus(Lists.newArrayList(
@@ -57,7 +59,7 @@ public class DefaultHierarchyServiceTest {
     @Test
     public void whenNodeIsRenamedThenGridViewShouldReflectIt(){
         hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "myNode", ""));
-        hierarchyService.changeNodeName(hierarchyId, new ChangeNodeNameCommand(nodeId, 2L, "newName"));
+        hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 2L, "newName"));
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
         assertThat(hierarchyAsGrid).isPresent();
@@ -103,7 +105,7 @@ public class DefaultHierarchyServiceTest {
     @Test
     public void whenNodeIsRenamedThenHierarchyViewShouldReflectIt(){
         hierarchyService.createNewNode(hierarchyId, new CreateNodeCommand(nodeId, 1L, "myNode", ""));
-        hierarchyService.changeNodeName(hierarchyId, new ChangeNodeNameCommand(nodeId, 2L, "newName"));
+        hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 2L, "newName"));
         Optional<ChildList> hierarchy = hierarchyService.getChildList(hierarchyId, Optional.empty());
 
         assertThat(hierarchy).isPresent();

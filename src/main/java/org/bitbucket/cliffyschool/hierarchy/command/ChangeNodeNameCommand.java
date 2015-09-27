@@ -3,6 +3,7 @@ package org.bitbucket.cliffyschool.hierarchy.command;
 import java.util.UUID;
 
 public class ChangeNodeNameCommand extends Command {
+    private UUID hierarchyId;
     private UUID nodeId;
     private String newName;
     private long baseVersionId;
@@ -15,7 +16,8 @@ public class ChangeNodeNameCommand extends Command {
         return newName;
     }
 
-    public ChangeNodeNameCommand(UUID nodeId, long baseVersionId, String newName) {
+    public ChangeNodeNameCommand(UUID hierarchyId, UUID nodeId, long baseVersionId, String newName) {
+        this.hierarchyId = hierarchyId;
         this.baseVersionId = baseVersionId;
         this.nodeId = nodeId;
         this.newName = newName;
@@ -23,5 +25,9 @@ public class ChangeNodeNameCommand extends Command {
 
     public long getBaseVersionId() {
         return baseVersionId;
+    }
+
+    public UUID getHierarchyId() {
+        return hierarchyId;
     }
 }

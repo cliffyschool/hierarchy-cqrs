@@ -24,6 +24,17 @@ public class EventStream {
         this.events.addAll(Lists.newArrayList(events));
     }
 
+    public void append(EventStream eventStream){
+        if (eventStream == null || eventStream.getEvents() == null)
+            return;
+
+        this.events.addAll(eventStream.getEvents());
+    }
+
+    public void clear() {
+        events.clear();
+    }
+
     public static EventStream from(List<Event> events){
         if (events == null || events.isEmpty())
             return new EventStream(Lists.newArrayList());
