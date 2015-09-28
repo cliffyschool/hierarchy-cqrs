@@ -2,13 +2,10 @@ package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.event.Event;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
-import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
 import org.bitbucket.cliffyschool.hierarchy.event.NodePropertyValueChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class Node extends AggregateRoot{
@@ -49,7 +46,7 @@ public class Node extends AggregateRoot{
     public <T> void changeChildCount(int childCount) {
         int previousChildCount = this.childCount;
         this.childCount = childCount;
-        changeEvents.append(new NodePropertyValueChanged<Integer>(hierarchyId, id, "ChildCount",previousChildCount, childCount));
+        changeEvents.append(new NodePropertyValueChanged<>(hierarchyId, id, "ChildCount",previousChildCount, childCount));
     }
 
     void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand) {

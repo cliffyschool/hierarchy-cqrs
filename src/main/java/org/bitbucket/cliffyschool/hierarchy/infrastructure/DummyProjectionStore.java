@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 public class DummyProjectionStore <K,T> {
 

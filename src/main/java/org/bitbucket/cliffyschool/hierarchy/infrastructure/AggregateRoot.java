@@ -1,7 +1,6 @@
 package org.bitbucket.cliffyschool.hierarchy.infrastructure;
 
 import com.google.common.collect.Lists;
-import org.bitbucket.cliffyschool.hierarchy.event.Event;
 
 import java.util.UUID;
 

@@ -1,10 +1,14 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.NameAlreadyUsedException;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
+import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
+import org.bitbucket.cliffyschool.hierarchy.event.NodeInserted;
+import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
-import org.bitbucket.cliffyschool.hierarchy.event.*;
 
 import java.util.Map;
 import java.util.Optional;

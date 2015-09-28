@@ -1,20 +1,20 @@
 package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
 
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjectionKey;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
-import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
-import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
-import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.domain.Node;
 import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
-import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
-import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 
 import java.util.Optional;

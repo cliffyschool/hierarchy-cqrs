@@ -1,7 +1,6 @@
 package org.bitbucket.cliffyschool.hierarchy.event;
 
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class NodeCreated extends Event {
