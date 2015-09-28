@@ -17,18 +17,20 @@ public class EventStream {
         return events;
     }
 
-    public void append(Event... events) {
+    public EventStream append(Event... events) {
         if (events == null)
-            return;
+            return this;
 
         this.events.addAll(Lists.newArrayList(events));
+        return this;
     }
 
-    public void append(EventStream eventStream){
+    public EventStream append(EventStream eventStream){
         if (eventStream == null || eventStream.getEvents() == null)
-            return;
+            return this;
 
         this.events.addAll(eventStream.getEvents());
+        return this;
     }
 
     public void clear() {

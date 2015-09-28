@@ -4,6 +4,7 @@ import com.google.common.collect.*;
 import javaslang.Tuple2;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.NameAlreadyUsedException;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
+import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.*;
@@ -62,5 +63,18 @@ public class Hierarchy extends AggregateRoot {
                 .filter(entry -> entry.getValue().equals(nodeId))
                 .findFirst()
                 .map(Map.Entry::getKey);
+    }
+
+    public void changeNodeName(ChangeNodeNameCommand changeNodeNameCmd, Node node) {
+        if (nodesByName.containsKey(changeNodeNameCmd.getNewName()))
+            throw new NameAlreadyUsedException("Node", changeNodeNameCmd.getNewName());
+
+        String oldName= node.getName();
+        node.changeNodeName(changeNodeNameCmd);
+        nodesByName.remove(oldName);
+        nodesByName.put(node.getName(), node);
+
+        Optional<UUID> parentId = getParentId(node.getId());
+        changeEvents.append(new NodeNameChanged(id, node.getId(), parentId, changeNodeNameCmd.getNewName()));
     }
 }

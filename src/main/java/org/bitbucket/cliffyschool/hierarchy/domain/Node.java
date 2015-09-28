@@ -52,11 +52,7 @@ public class Node extends AggregateRoot{
         changeEvents.append(new NodePropertyValueChanged<Integer>(hierarchyId, id, "ChildCount",previousChildCount, childCount));
     }
 
-    public void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand, Hierarchy hierarchy) {
-        String oldName = name;
+    void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand) {
         name = changeNodeNameCommand.getNewName();
-        Optional<UUID> parentId = hierarchy.getParentId(changeNodeNameCommand.getNodeId());
-        hierarchy.changeNodeName(oldName, name);
-        changeEvents.append(new NodeNameChanged(hierarchyId, id, parentId, name));
     }
 }

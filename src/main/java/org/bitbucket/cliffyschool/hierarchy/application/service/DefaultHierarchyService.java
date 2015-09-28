@@ -73,10 +73,11 @@ public class DefaultHierarchyService implements HierarchyService {
         Hierarchy hierarchy = hierarchyRepository.findById(changeNodeNameCommand.getHierarchyId())
                 .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", changeNodeNameCommand.getHierarchyId()));
 
-        node.changeNodeName(changeNodeNameCommand, hierarchy);
+        hierarchy.changeNodeName(changeNodeNameCommand, node);
         nodeRepository.store(changeNodeNameCommand.getNodeId(), node, node.getVersionId());
 
-        fakeBus.publish(node.getChangeEvents());
+
+        fakeBus.publish(hierarchy.getChangeEvents().append(node.getChangeEvents()));
     }
 
     @Override

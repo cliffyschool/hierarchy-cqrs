@@ -27,7 +27,7 @@ public class ChangeNodeName {
 
     @Test
     public void whenNodeNameChangedThenNewNameIsSet(){
-        node.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 0, "newName"), hierarchy);
+        hierarchy.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 0, "newName"), node);
 
         Node node = hierarchy.nodeById(nodeId);
         assertThat(node.getName()).isEqualTo("newName");
@@ -36,7 +36,7 @@ public class ChangeNodeName {
     @Test
     public void whenNodeNameChangedThenOldNameCanBeUsedAgain() {
         String oldName = node.getName();
-        node.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 0, "newName"), hierarchy);
+        hierarchy.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 0, "newName"), node);
 
         UUID newNodeId = UUID.randomUUID();
         hierarchy.addNode(Optional.empty(), new Node(newNodeId, hierarchyId, oldName, "blue"));
