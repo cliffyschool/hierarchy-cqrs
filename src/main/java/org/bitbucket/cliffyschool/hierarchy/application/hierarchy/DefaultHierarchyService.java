@@ -9,11 +9,11 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Chi
 import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.domain.Node;
 import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
-import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 

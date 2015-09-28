@@ -9,9 +9,9 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Hie
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Node;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
+import org.bitbucket.cliffyschool.hierarchy.domain.repository.DummyHierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
-import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
+import org.bitbucket.cliffyschool.hierarchy.domain.repository.DummyNodeRepository;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +26,8 @@ public class UpdateChildListProjection {
     private HierarchyAsGridProjection gridProjection = new HierarchyAsGridProjection();
     private ChildListProjection childListProjection = new ChildListProjection();
     HierarchyService hierarchyService = new DefaultHierarchyService(
-            new HierarchyRepository(),
-            new NodeRepository(),
+            new DummyHierarchyRepository(),
+            new DummyNodeRepository(),
             childListProjection,
             gridProjection,
             new FakeBus(Lists.newArrayList(

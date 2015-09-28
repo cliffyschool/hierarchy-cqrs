@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Optional;
 
-public class InMemoryRepository<K,T extends AggregateRoot>  implements Repository<K,T> {
+public class DummyRepository<K,T extends AggregateRoot>  implements Repository<K,T> {
 
     private Map<K, T> map = Maps.newHashMap();
 
