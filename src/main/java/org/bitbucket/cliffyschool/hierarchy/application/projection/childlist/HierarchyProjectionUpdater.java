@@ -17,7 +17,7 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
             new ImmutableMap.Builder<Class<? extends Event>,Consumer<? super Event>>()
                     .put(HierarchyCreated.class, e -> handle((HierarchyCreated) e))
                     .put(NodeCreated.class, e -> handle((NodeCreated) e))
-                    .put(NodeAddedToHierarchy.class, e -> handle((NodeAddedToHierarchy)e))
+                    .put(NodeInserted.class, e -> handle((NodeInserted)e))
                     .put(NodeNameChanged.class, e -> handle((NodeNameChanged) e))
             .build();
 
@@ -53,7 +53,7 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
         childListProjection.write(key, childList);
     }
 
-    private void handle(NodeAddedToHierarchy e){
+    private void handle(NodeInserted e){
 
         ChildListProjectionKey key = new ChildListProjectionKey(e.getHierarchyId(), e.getParentNodeId());
         ChildList childList = childListProjection.find(key)

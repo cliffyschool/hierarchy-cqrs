@@ -12,7 +12,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 
-public class AddNodeToHierarchy {
+public class InsertNode {
 
     private Hierarchy hierarchy;
     private UUID nodeId;
@@ -29,17 +29,17 @@ public class AddNodeToHierarchy {
 
     @Test
     public void whenNodeAddedThenNodeByIdShouldReturnIt() {
-        hierarchy.addNode(Optional.empty(), node);
+        hierarchy.insertNode(Optional.empty(), node);
 
-        assertThat(hierarchy.nodeById(nodeId)).isNotNull();
+        assertThat(hierarchy.containsNode(nodeId)).isNotNull();
     }
 
     @Test
     public void whenNodeAddedThenCanRetrieveParentId(){
-        hierarchy.addNode(Optional.empty(), node);
+        hierarchy.insertNode(Optional.empty(), node);
         Node child = new Node(UUID.randomUUID(), hierarchy.getId(), "child", "blue");
 
-        hierarchy.addNode(Optional.of(node.getId()), child);
+        hierarchy.insertNode(Optional.of(node), child);
         Optional<UUID> parentId = hierarchy.getParentId(child.getId());
 
         assertThat(parentId).isEqualTo(Optional.of(node.getId()));
@@ -50,24 +50,23 @@ public class AddNodeToHierarchy {
 
     @Test
     public void whenDuplicateNodeNameIsUsedThenAddNodeShouldThrowAnException() {
-        hierarchy.addNode(Optional.empty(), node);
+        hierarchy.insertNode(Optional.empty(), node);
         String nameOfExistingNode = node.getName();
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("exists"));
 
-        hierarchy.addNode(Optional.empty(), new Node(UUID.randomUUID(), hierarchy.getId(), nameOfExistingNode, node.getColor()));
+        hierarchy.insertNode(Optional.empty(), new Node(UUID.randomUUID(), hierarchy.getId(), nameOfExistingNode, node.getColor()));
     }
 
     @Test
     public void whenChildNodeAddedThenChildCountShouldIncrement(){
         UUID childNodeId = UUID.randomUUID();
-        hierarchy.addNode(Optional.empty(), node);
+        hierarchy.insertNode(Optional.empty(), node);
 
-        hierarchy.addNode(Optional.of(nodeId), new Node(childNodeId, hierarchy.getId(), "child", "red"));
+        hierarchy.insertNode(Optional.of(node), new Node(childNodeId, hierarchy.getId(), "child", "red"));
 
-        Node parent = hierarchy.nodeById(nodeId);
-        assertThat(parent.getChildCount()).isEqualTo(1);
+        assertThat(node.getChildCount()).isEqualTo(1);
     }
 }
 

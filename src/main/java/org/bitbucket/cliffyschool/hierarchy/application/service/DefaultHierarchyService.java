@@ -6,11 +6,11 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.Hierarch
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
+import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.Node;
 import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
-import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
@@ -53,16 +53,41 @@ public class DefaultHierarchyService implements HierarchyService {
     @Override
     public void createNewNode(CreateNodeCommand createNodeCommand) {
         Hierarchy hierarchy = hierarchyRepository.findById(createNodeCommand.getHierarchyId())
-                .orElseThrow(() -> new ObjectNotFoundException("ChildList", createNodeCommand.getHierarchyId()));
+                .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", createNodeCommand.getHierarchyId()));
 
         Node node = Node.createNode(createNodeCommand);
-        hierarchy.addNode(createNodeCommand.getParentNodeId(), node);
+        Optional<Node> parentNode = createNodeCommand.getParentNodeId()
+                .map(nodeRepository::findById).orElse(Optional.empty());
+        hierarchy.insertNode(parentNode, node);
 
-        hierarchyRepository.store(hierarchy.getId(), hierarchy, hierarchy.getVersionId());
-        nodeRepository.store(node.getId(), node, node.getVersionId());
+        hierarchyRepository.store(hierarchy.getId(), hierarchy, createNodeCommand.getLastHierarchyVersionLoaded());
+        nodeRepository.store(node.getId(), node, 0);
+        parentNode.ifPresent(pNode -> {
+            nodeRepository.store(pNode.getId(), pNode, pNode.getVersionId());
+        });
 
         EventStream eventStream = EventStream.from(node.getChangeEvents().getEvents());
         eventStream.append(hierarchy.getChangeEvents());
+        fakeBus.publish(eventStream);
+    }
+
+    @Override
+    public void insertNode(InsertNodeCommand insertNodeCommand) {
+        Hierarchy hierarchy = hierarchyRepository.findById(insertNodeCommand.getHierarchyId())
+                .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", insertNodeCommand.getHierarchyId()));
+        Node parentNode = nodeRepository.findById(insertNodeCommand.getParentId())
+                .orElseThrow(() -> new ObjectNotFoundException("Node", insertNodeCommand.getParentId()));
+        Node childNode = nodeRepository.findById(insertNodeCommand.getNodeId())
+                .orElseThrow(() -> new ObjectNotFoundException("Node", insertNodeCommand.getNodeId()));
+
+        hierarchy.insertNode(Optional.of(parentNode), childNode);
+        hierarchyRepository.store(hierarchy.getId(), hierarchy, insertNodeCommand.getLastHierarchyVersionLoaded());
+        nodeRepository.store(parentNode.getId(), parentNode, parentNode.getVersionId());
+
+        EventStream eventStream = hierarchy.getChangeEvents()
+                .append(parentNode.getChangeEvents())
+                .append(childNode.getChangeEvents());
+
         fakeBus.publish(eventStream);
     }
 
@@ -74,6 +99,7 @@ public class DefaultHierarchyService implements HierarchyService {
                 .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", changeNodeNameCommand.getHierarchyId()));
 
         hierarchy.changeNodeName(changeNodeNameCommand, node);
+        hierarchyRepository.store(hierarchy.getId(), hierarchy, changeNodeNameCommand.getLastHierarchyVersionLoaded());
         nodeRepository.store(changeNodeNameCommand.getNodeId(), node, node.getVersionId());
 
 

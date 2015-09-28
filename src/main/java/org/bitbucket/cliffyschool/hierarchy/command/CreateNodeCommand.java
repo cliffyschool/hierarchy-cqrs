@@ -3,26 +3,25 @@ package org.bitbucket.cliffyschool.hierarchy.command;
 import java.util.Optional;
 import java.util.UUID;
 
-public class CreateNodeCommand extends Command {
+public class CreateNodeCommand extends HierarchyCommand {
     private UUID hierarchyId;
     private final String color;
     private final UUID nodeId;
     private String nodeName;
     private Optional<UUID> parentNodeId = Optional.empty();
-    private long baseVersionId;
 
-    public CreateNodeCommand(UUID hierarchyId, UUID nodeId, long baseVersionId, String nodeName, String color,
+    public CreateNodeCommand(UUID hierarchyId, long lastHierarchyVersionLoaded, UUID nodeId, String nodeName, String color,
                              Optional<UUID> parentNodeId) {
+        super(lastHierarchyVersionLoaded);
         this.hierarchyId = hierarchyId;
         this.nodeId = nodeId;
-        this.baseVersionId = baseVersionId;
         this.nodeName = nodeName;
         this.color = color;
         this.parentNodeId = parentNodeId;
     }
 
-    public CreateNodeCommand(UUID hierarchyId, UUID nodeId, long baseVersionId, String nodeName, String color) {
-       this(hierarchyId, nodeId, baseVersionId, nodeName, color, Optional.empty());
+    public CreateNodeCommand(UUID hierarchyId, UUID nodeId, long lastHierarchyVersionLoaded, String nodeName, String color) {
+       this(hierarchyId, lastHierarchyVersionLoaded, nodeId, nodeName, color, Optional.empty());
     }
 
     public UUID getHierarchyId() {
@@ -45,7 +44,4 @@ public class CreateNodeCommand extends Command {
         return parentNodeId;
     }
 
-    public long getBaseVersionId() {
-        return baseVersionId;
-    }
 }

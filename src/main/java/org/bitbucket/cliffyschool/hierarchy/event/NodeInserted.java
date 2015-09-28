@@ -3,11 +3,11 @@ package org.bitbucket.cliffyschool.hierarchy.event;
 import java.util.Optional;
 import java.util.UUID;
 
-public class NodeAddedToHierarchy extends Event {
+public class NodeInserted extends Event {
     private Optional<UUID> parentNodeId;
     private UUID childNodeId;
 
-    public NodeAddedToHierarchy(UUID hierarchyId, Optional<UUID> parentNodeId, UUID childNodeId) {
+    public NodeInserted(UUID hierarchyId, Optional<UUID> parentNodeId, UUID childNodeId) {
         super(hierarchyId);
         this.parentNodeId = parentNodeId;
         this.childNodeId = childNodeId;

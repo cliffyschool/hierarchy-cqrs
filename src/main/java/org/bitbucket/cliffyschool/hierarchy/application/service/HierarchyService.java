@@ -2,6 +2,7 @@ package org.bitbucket.cliffyschool.hierarchy.application.service;
 
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
+import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
@@ -13,6 +14,7 @@ public interface HierarchyService {
 
     void createNewHierarchy(CreateHierarchyCommand createHierarchyCommand);
     void createNewNode(CreateNodeCommand createNodeCommand);
+    void insertNode(InsertNodeCommand insertNodeCommand);
     void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand);
 
     Optional<HierarchyAsGrid> getHierarchyAsGrid(UUID id);

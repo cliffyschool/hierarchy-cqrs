@@ -10,10 +10,12 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Hie
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Node;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.InMemoryRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,7 +61,7 @@ public class DefaultHierarchyServiceTest {
     @Test
     public void whenNodeIsRenamedThenGridViewShouldReflectIt(){
         hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
-        hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 2L, "newName"));
+        hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 2L, nodeId, "newName"));
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
         assertThat(hierarchyAsGrid).isPresent();
@@ -81,9 +83,9 @@ public class DefaultHierarchyServiceTest {
     public void whenNodeIsCreatedAsGrandChildThenChildListViewShouldReflectIt(){
         UUID childId = UUID.randomUUID();
         UUID grandChildId = UUID.randomUUID();
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "parent", "blue", Optional.empty()));
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, childId, 2L, "child", "blue", Optional.of(nodeId)));
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, grandChildId, 3L, "grandchild", "blue", Optional.of(childId)));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "parent", "blue", Optional.empty()));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 2L, childId, "child", "blue", Optional.of(nodeId)));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 3L, grandChildId, "grandchild", "blue", Optional.of(childId)));
 
 
         ChildList list = hierarchyService.getChildList(hierarchyId, Optional.empty()).get();
@@ -105,7 +107,7 @@ public class DefaultHierarchyServiceTest {
     @Test
     public void whenNodeIsRenamedThenHierarchyViewShouldReflectIt(){
         hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
-        hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 2L, "newName"));
+        hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 2L, nodeId, "newName"));
         Optional<ChildList> hierarchy = hierarchyService.getChildList(hierarchyId, Optional.empty());
 
         assertThat(hierarchy).isPresent();

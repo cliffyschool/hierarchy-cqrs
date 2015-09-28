@@ -22,25 +22,24 @@ public class ChangeNodeName {
         hierarchyId = UUID.randomUUID();
         hierarchy = new Hierarchy(hierarchyId);
         node = new Node(nodeId, hierarchyId, "name", "blue");
-       hierarchy.addNode(Optional.empty(), node);
+       hierarchy.insertNode(Optional.empty(), node);
     }
 
     @Test
     public void whenNodeNameChangedThenNewNameIsSet(){
-        hierarchy.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 0, "newName"), node);
+        hierarchy.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 0, nodeId, "newName"), node);
 
-        Node node = hierarchy.nodeById(nodeId);
         assertThat(node.getName()).isEqualTo("newName");
     }
 
     @Test
     public void whenNodeNameChangedThenOldNameCanBeUsedAgain() {
         String oldName = node.getName();
-        hierarchy.changeNodeName(new ChangeNodeNameCommand(hierarchyId, nodeId, 0, "newName"), node);
+        hierarchy.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 0, nodeId, "newName"), node);
 
         UUID newNodeId = UUID.randomUUID();
-        hierarchy.addNode(Optional.empty(), new Node(newNodeId, hierarchyId, oldName, "blue"));
+        hierarchy.insertNode(Optional.empty(), new Node(newNodeId, hierarchyId, oldName, "blue"));
 
-        assertThat(hierarchy.nodeById(newNodeId)).isNotNull();
+        assertThat(hierarchy.containsNode(newNodeId)).isNotNull();
     }
 }

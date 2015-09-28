@@ -1,12 +1,9 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import com.google.common.collect.*;
-import javaslang.Tuple2;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.NameAlreadyUsedException;
-import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
-import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.event.*;
 
 import java.util.Map;
@@ -15,8 +12,8 @@ import java.util.UUID;
 
 public class Hierarchy extends AggregateRoot {
 
-    private Map<UUID, Node> nodesById = Maps.newHashMap();
-    private Map<String, Node> nodesByName = Maps.newHashMap();
+    private Map<UUID, UUID> nodesById = Maps.newHashMap();
+    private Map<String, UUID> nodesByName = Maps.newHashMap();
     private ListMultimap<UUID, UUID> childrenByParentId = ArrayListMultimap.create();
 
     public Hierarchy(UUID id) {
@@ -29,32 +26,25 @@ public class Hierarchy extends AggregateRoot {
         return hierarchy;
     }
 
-    public Node nodeById(UUID nodeId) {
-        return nodesById.get(nodeId);
+    public boolean containsNode(UUID nodeId) {
+        return nodesById.containsKey(nodeId);
     }
 
-    public void addNode(Optional<UUID> parentId, Node node) {
+    public void insertNode(Optional<Node> parentNode, Node node) {
         if (node == null)
             throw new NullPointerException("node");
         if (nodesByName.containsKey(node.getName()))
             throw new NameAlreadyUsedException("Node", node.getName());
 
-        Optional<Node> parentNode = parentId.map(nodesById::get);
-
-        nodesById.put(node.getId(), node);
-        nodesByName.put(node.getName(), node);
+        nodesById.put(node.getId(), node.getId());
+        nodesByName.put(node.getName(), node.getId());
         parentNode.ifPresent(pNode -> {
             childrenByParentId.put(pNode.getId(), node.getId());
             pNode.changeChildCount(pNode.getChildCount() + 1);
             changeEvents.append(pNode.getChangeEvents());
         });
 
-        changeEvents.append(new NodeAddedToHierarchy(id, parentId, node.getId()));
-    }
-
-    void changeNodeName(String oldName, String newName){
-        Node node = nodesByName.remove(oldName);
-        nodesByName.put(newName, node);
+        changeEvents.append(new NodeInserted(id, parentNode.map(AggregateRoot::getId), node.getId()));
     }
 
     public Optional<UUID> getParentId(UUID nodeId) {
@@ -72,7 +62,7 @@ public class Hierarchy extends AggregateRoot {
         String oldName= node.getName();
         node.changeNodeName(changeNodeNameCmd);
         nodesByName.remove(oldName);
-        nodesByName.put(node.getName(), node);
+        nodesByName.put(node.getName(), node.getId());
 
         Optional<UUID> parentId = getParentId(node.getId());
         changeEvents.append(new NodeNameChanged(id, node.getId(), parentId, changeNodeNameCmd.getNewName()));
