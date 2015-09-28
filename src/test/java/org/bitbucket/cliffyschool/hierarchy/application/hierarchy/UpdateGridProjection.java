@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.application.service;
+package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
 
 import com.google.common.collect.Lists;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
@@ -44,7 +44,7 @@ public class UpdateGridProjection {
 
     @Test
     public void whenNodeIsCreatedThenGridViewShouldIncludeIt(){
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "myNode", ""));
 
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 
@@ -55,7 +55,7 @@ public class UpdateGridProjection {
 
     @Test
     public void whenNodeIsRenamedThenGridViewShouldReflectIt(){
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "myNode", ""));
         hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 2L, nodeId, "newName"));
         Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
 

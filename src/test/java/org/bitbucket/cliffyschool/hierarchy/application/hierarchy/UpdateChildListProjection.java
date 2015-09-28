@@ -1,8 +1,7 @@
-package org.bitbucket.cliffyschool.hierarchy.application.service;
+package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
 
 import com.google.common.collect.Lists;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
-import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjectionUpdater;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
@@ -10,12 +9,10 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Hie
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Node;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
-import org.bitbucket.cliffyschool.hierarchy.infrastructure.InMemoryRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,7 +45,7 @@ public class UpdateChildListProjection {
 
     @Test
     public void whenRootNodeIsCreatedThenChildListShouldReflectIt(){
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "rootNode", ""));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "rootNode", ""));
 
         Optional<ChildList> hierarchyView = hierarchyService.getChildList(hierarchyId, Optional.empty());
 
@@ -84,7 +81,7 @@ public class UpdateChildListProjection {
 
     @Test
     public void whenNodeIsRenamedThenChildListViewShouldReflectIt(){
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "myNode", ""));
         hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 2L, nodeId, "newName"));
         Optional<ChildList> hierarchy = hierarchyService.getChildList(hierarchyId, Optional.empty());
 

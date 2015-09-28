@@ -23,7 +23,7 @@ public class InsertNode {
     public void setUp() {
         hierarchy = new Hierarchy(UUID.randomUUID());
         nodeId = UUID.randomUUID();
-        createNodeCommand = new CreateNodeCommand(hierarchy.getId(), nodeId, 0L, nodeId.toString(), "blue");
+        createNodeCommand = new CreateNodeCommand(hierarchy.getId(), 0L, nodeId, nodeId.toString(), "blue");
         node = new Node(nodeId, hierarchy.getId(), "node", "blue");
     }
 

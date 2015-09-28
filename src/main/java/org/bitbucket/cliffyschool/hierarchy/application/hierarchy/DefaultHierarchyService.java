@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.application.service;
+package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
 
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjectionKey;
@@ -54,10 +54,12 @@ public class DefaultHierarchyService implements HierarchyService {
     public void createNewNode(CreateNodeCommand createNodeCommand) {
         Hierarchy hierarchy = hierarchyRepository.findById(createNodeCommand.getHierarchyId())
                 .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", createNodeCommand.getHierarchyId()));
-
-        Node node = Node.createNode(createNodeCommand);
         Optional<Node> parentNode = createNodeCommand.getParentNodeId()
                 .map(nodeRepository::findById).orElse(Optional.empty());
+        if (createNodeCommand.getParentNodeId().isPresent() && !parentNode.isPresent())
+            throw new ObjectNotFoundException("Node", createNodeCommand.getParentNodeId().get());
+
+        Node node = Node.createNode(createNodeCommand);
         hierarchy.insertNode(parentNode, node);
 
         hierarchyRepository.store(hierarchy.getId(), hierarchy, createNodeCommand.getLastHierarchyVersionLoaded());

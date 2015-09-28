@@ -33,7 +33,7 @@ public class Hierarchy extends AggregateRoot {
     public void insertNode(Optional<Node> parentNode, Node node) {
         if (node == null)
             throw new NullPointerException("node");
-        if (nodesByName.containsKey(node.getName()))
+        if (nodesByName.containsKey(node.getName()) && !nodesByName.get(node.getName()).equals(node.getId()))
             throw new NameAlreadyUsedException("Node", node.getName());
 
         nodesById.put(node.getId(), node.getId());

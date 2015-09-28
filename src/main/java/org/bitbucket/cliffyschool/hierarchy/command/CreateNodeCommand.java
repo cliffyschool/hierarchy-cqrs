@@ -20,7 +20,7 @@ public class CreateNodeCommand extends HierarchyCommand {
         this.parentNodeId = parentNodeId;
     }
 
-    public CreateNodeCommand(UUID hierarchyId, UUID nodeId, long lastHierarchyVersionLoaded, String nodeName, String color) {
+    public CreateNodeCommand(UUID hierarchyId, long lastHierarchyVersionLoaded, UUID nodeId, String nodeName, String color) {
        this(hierarchyId, lastHierarchyVersionLoaded, nodeId, nodeName, color, Optional.empty());
     }
 
