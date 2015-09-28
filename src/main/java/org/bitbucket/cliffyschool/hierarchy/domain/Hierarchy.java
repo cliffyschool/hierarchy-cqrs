@@ -3,6 +3,8 @@ package org.bitbucket.cliffyschool.hierarchy.domain;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
+import com.tangosol.io.pof.annotation.Portable;
+import com.tangosol.io.pof.annotation.PortableProperty;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.NameAlreadyUsedException;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
@@ -10,15 +12,20 @@ import org.bitbucket.cliffyschool.hierarchy.event.NodeInserted;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Hierarchy extends AggregateRoot {
+public class Hierarchy extends AggregateRoot implements Serializable {
 
     private Map<UUID, UUID> nodesById = Maps.newHashMap();
     private Map<String, UUID> nodesByName = Maps.newHashMap();
     private ListMultimap<UUID, UUID> childrenByParentId = ArrayListMultimap.create();
+
+    public Hierarchy(){
+        super(null);
+    }
 
     public Hierarchy(UUID id) {
         super(id);

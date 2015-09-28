@@ -9,6 +9,9 @@ public abstract class AggregateRoot {
     protected long versionId;
     protected EventStream changeEvents;
 
+    public AggregateRoot(){
+    }
+
     public AggregateRoot(UUID id){
         this.id = id;
         changeEvents = EventStream.from(Lists.newArrayList());
