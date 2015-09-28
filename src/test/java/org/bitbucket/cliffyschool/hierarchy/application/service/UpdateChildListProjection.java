@@ -24,7 +24,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DefaultHierarchyServiceTest {
+public class UpdateChildListProjection {
 
     private HierarchyAsGridProjection gridProjection = new HierarchyAsGridProjection();
     private ChildListProjection childListProjection = new ChildListProjection();
@@ -44,28 +44,6 @@ public class DefaultHierarchyServiceTest {
         hierarchyId = UUID.randomUUID();
         hierarchyService.createNewHierarchy(new CreateHierarchyCommand(hierarchyId, "testHierarchy"));
         nodeId = UUID.randomUUID();
-    }
-
-
-    @Test
-    public void whenNodeIsCreatedThenGridViewShouldIncludeIt(){
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
-
-        Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
-
-        assertThat(hierarchyAsGrid).isPresent();
-        assertThat(hierarchyAsGrid.get().getRows()).extracting("name").contains("myNode");
-
-    }
-
-    @Test
-    public void whenNodeIsRenamedThenGridViewShouldReflectIt(){
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
-        hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 2L, nodeId, "newName"));
-        Optional<HierarchyAsGrid> hierarchyAsGrid = hierarchyService.getHierarchyAsGrid(hierarchyId);
-
-        assertThat(hierarchyAsGrid).isPresent();
-        assertThat(hierarchyAsGrid.get().getRows()).extracting("name").contains("newName");
     }
 
     @Test
@@ -105,7 +83,7 @@ public class DefaultHierarchyServiceTest {
     }
 
     @Test
-    public void whenNodeIsRenamedThenHierarchyViewShouldReflectIt(){
+    public void whenNodeIsRenamedThenChildListViewShouldReflectIt(){
         hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, nodeId, 1L, "myNode", ""));
         hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 2L, nodeId, "newName"));
         Optional<ChildList> hierarchy = hierarchyService.getChildList(hierarchyId, Optional.empty());
