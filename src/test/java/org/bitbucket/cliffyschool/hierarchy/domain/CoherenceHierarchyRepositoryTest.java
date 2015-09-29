@@ -34,6 +34,7 @@ public class CoherenceHierarchyRepositoryTest {
         Optional<Hierarchy> retrieved = hierarchyRepository.findById(hierarchy.getId());
 
         assertThat(retrieved.isPresent()).isTrue();
+        assertThat(retrieved.get()).isEqualTo(hierarchy);
 
     }
 }

@@ -78,4 +78,25 @@ public class Hierarchy extends AggregateRoot implements Serializable {
         Optional<UUID> parentId = getParentId(node.getId());
         changeEvents.append(new NodeNameChanged(id, node.getId(), parentId, changeNodeNameCmd.getNewName()));
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Hierarchy hierarchy = (Hierarchy) o;
+
+        if (!nodesById.equals(hierarchy.nodesById)) return false;
+        if (!nodesByName.equals(hierarchy.nodesByName)) return false;
+        return childrenByParentId.equals(hierarchy.childrenByParentId);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = nodesById.hashCode();
+        result = 31 * result + nodesByName.hashCode();
+        result = 31 * result + childrenByParentId.hashCode();
+        return result;
+    }
 }
