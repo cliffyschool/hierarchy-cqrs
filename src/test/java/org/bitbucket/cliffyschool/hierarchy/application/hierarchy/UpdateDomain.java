@@ -4,6 +4,7 @@ import org.bitbucket.cliffyschool.hierarchy.application.HierarchyService;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
+import org.bitbucket.cliffyschool.hierarchy.application.service.DefaultHierarchyService;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;

@@ -12,6 +12,20 @@ public class EventStream {
         this.events = events;
     }
 
+    public static EventStream from(List<Event> events){
+        if (events == null || events.isEmpty())
+            return new EventStream(Lists.newArrayList());
+
+        return new EventStream(events);
+    }
+
+    public static EventStream from(Event... events){
+        if (events == null || events.length == 0)
+            return new EventStream(Lists.newArrayList());
+
+        return new EventStream(Lists.newArrayList(events));
+    }
+
     public List<Event> getEvents() {
         return events;
     }
@@ -34,20 +48,6 @@ public class EventStream {
 
     public void clear() {
         events.clear();
-    }
-
-    public static EventStream from(List<Event> events){
-        if (events == null || events.isEmpty())
-            return new EventStream(Lists.newArrayList());
-
-        return new EventStream(events);
-    }
-
-    public static EventStream from(Event... events){
-        if (events == null || events.length == 0)
-            return new EventStream(Lists.newArrayList());
-
-        return new EventStream(Lists.newArrayList(events));
     }
 }
 

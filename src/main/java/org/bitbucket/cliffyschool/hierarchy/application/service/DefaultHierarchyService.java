@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
+package org.bitbucket.cliffyschool.hierarchy.application.service;
 
 import org.bitbucket.cliffyschool.hierarchy.application.HierarchyService;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
