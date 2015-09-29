@@ -1,5 +1,6 @@
 package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
 
+import org.bitbucket.cliffyschool.hierarchy.application.HierarchyService;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFoundException;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;

@@ -1,6 +1,7 @@
 package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
 
 import com.google.common.collect.Lists;
+import org.bitbucket.cliffyschool.hierarchy.application.HierarchyService;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.HierarchyProjectionUpdater;

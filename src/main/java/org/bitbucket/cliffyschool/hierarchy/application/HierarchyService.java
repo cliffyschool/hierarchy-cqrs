@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
+package org.bitbucket.cliffyschool.hierarchy.application;
 
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
