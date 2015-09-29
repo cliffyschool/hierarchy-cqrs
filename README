@@ -1,1 +1,9 @@
 Simple hierarchy/node domain with CQRS, but without event sourcing.
+
+Coherence repository implementations provided.
+
+To install:
+-clone
+-copy coherence.jar from Coherence install to hierarchy-cqrs/lib
+-./gradlew clean test
+
