@@ -12,7 +12,6 @@ public class Node extends AggregateRoot{
     private UUID hierarchyId;
     private String name;
     private String color;
-    private int childCount;
 
     public Node(UUID id, UUID hierarchyId, String name, String color) {
         super(id);
@@ -37,17 +36,7 @@ public class Node extends AggregateRoot{
         return color;
     }
 
-    public int getChildCount() {
-        return childCount;
-    }
-
     public UUID getHierarchyId() { return hierarchyId; }
-
-    public <T> void changeChildCount(int childCount) {
-        int previousChildCount = this.childCount;
-        this.childCount = childCount;
-        changeEvents.append(new NodePropertyValueChanged<>(hierarchyId, id, "ChildCount",previousChildCount, childCount));
-    }
 
     void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand) {
         name = changeNodeNameCommand.getNewName();

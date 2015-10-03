@@ -107,18 +107,6 @@ public class UpdateDomain {
     }
 
     @Test
-    public void insertNodeShouldIncrementParentsChildCount() {
-        Optional<UUID> parentId = Optional.of(UUID.randomUUID());
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, parentId.get(), "parent name", "blue"));
-        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 2L, nodeId, "node name", "blue"));
-        hierarchyService.insertNode(new InsertNodeCommand(hierarchyId, 3L, parentId.get(), nodeId));
-
-        Node node = nodeRepository.findById(parentId.get()).get();
-
-        assertThat(node.getChildCount()).isEqualTo(1);
-    }
-
-    @Test
     public void insertNodeWithNonExistentHierarchyShouldThrowException() {
         thrown.expect(ObjectNotFoundException.class);
         thrown.expectMessage(containsString("Hierarchy"));

@@ -2,24 +2,22 @@ package org.bitbucket.cliffyschool.hierarchy.application.projection.grid;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import org.bitbucket.cliffyschool.hierarchy.event.Event;
-import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
-import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
-import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
+import org.bitbucket.cliffyschool.hierarchy.event.*;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.ProjectionHandler;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class HierarchyAsGridProjectionUpdater implements ProjectionHandler {
 
-    private static Map<Class<? extends Event>,BiConsumer<? super Event,HierarchyAsGridProjection>> handlers =
-            new ImmutableMap.Builder<Class<? extends Event>,BiConsumer<? super Event, HierarchyAsGridProjection>>()
-                    .put(HierarchyCreated.class, (e, p) -> writeHierarchyCreated((HierarchyCreated) e, p))
-                    .put(NodeCreated.class, (e, p) -> writeNodeCreated((NodeCreated) e, p))
-                    .put(NodeNameChanged.class, (e, p) -> writeNodeNameChanged((NodeNameChanged) e, p))
+    private Map<Class<? extends Event>,Consumer<? super Event>> handlers =
+            new ImmutableMap.Builder<Class<? extends Event>,Consumer<? super Event>>()
+                    .put(HierarchyCreated.class, e -> handle((HierarchyCreated) e))
+                    .put(NodeCreated.class, e -> handle((NodeCreated) e))
+                    .put(NodeNameChanged.class, e -> handle((NodeNameChanged) e))
+                    .put(NodePathChanged.class, e -> handle((NodePathChanged) e))
             .build();
 
     private HierarchyAsGridProjection gridProjection;
@@ -34,14 +32,14 @@ public class HierarchyAsGridProjectionUpdater implements ProjectionHandler {
 
         stream.getEvents().stream()
                 .forEach(event -> Optional.ofNullable(handlers.get(event.getClass()))
-                        .ifPresent(writer -> writer.accept(event, gridProjection)));
+                        .ifPresent(writer -> writer.accept(event)));
     }
 
-    private static void writeHierarchyCreated(HierarchyCreated hierarchyCreated, HierarchyAsGridProjection gridProjection){
+    private void handle(HierarchyCreated hierarchyCreated){
          gridProjection.write(hierarchyCreated.getHierarchyId(), new HierarchyAsGrid(hierarchyCreated.getHierarchyId(), Lists.newArrayList()));
     }
 
-    private static void writeNodeCreated(NodeCreated nodeCreated, HierarchyAsGridProjection gridProjection){
+    private void handle(NodeCreated nodeCreated){
         HierarchyAsGrid grid = gridProjection.find(nodeCreated.getHierarchyId())
                 .orElseThrow(() -> new RuntimeException("Can't find hierarchy."));
 
@@ -50,12 +48,21 @@ public class HierarchyAsGridProjectionUpdater implements ProjectionHandler {
         gridProjection.write(grid.getId(), grid);
     }
 
-     private static void writeNodeNameChanged(NodeNameChanged nodeNameChanged, HierarchyAsGridProjection gridProjection){
+     private void handle(NodeNameChanged nodeNameChanged){
         HierarchyAsGrid grid = gridProjection.find(nodeNameChanged.getHierarchyId())
                 .orElseThrow(() -> new RuntimeException("Can't find hierarchy."));
          grid.getRows().stream()
                  .filter(n -> n.getNodeId().equals(nodeNameChanged.getNodeId())).findAny()
                  .ifPresent(n -> n.setName(nodeNameChanged.getNewName()));
          gridProjection.write(grid.getId(), grid);
+    }
+
+    private void handle(NodePathChanged nodePathChanged) {
+        HierarchyAsGrid grid = gridProjection.find(nodePathChanged.getHierarchyId())
+                .orElseThrow(() -> new RuntimeException("Can't find hierarchy."));
+        grid.getRows().stream()
+                 .filter(n -> n.getNodeId().equals(nodePathChanged.getNodeId())).findAny()
+                 .ifPresent(n -> n.setNodePath(nodePathChanged.getNodePath()));
+        gridProjection.write(grid.getId(), grid);
     }
 }

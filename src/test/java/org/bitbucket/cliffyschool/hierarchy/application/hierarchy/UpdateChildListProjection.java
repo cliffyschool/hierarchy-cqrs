@@ -82,6 +82,18 @@ public class UpdateChildListProjection {
     }
 
     @Test
+    public void whenNodeIsCreatedAsChildItShouldHaveAnEmptyChildList(){
+        UUID childId = UUID.randomUUID();
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "parent", "blue", Optional.empty()));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 2L, childId, "child", "blue", Optional.of(nodeId)));
+
+        Optional<ChildList> list = hierarchyService.getChildList(hierarchyId, Optional.of(childId));
+
+        assertThat(list).isPresent();
+        assertThat(list.get().getNodes()).isEmpty();
+    }
+
+    @Test
     public void whenNodeIsRenamedThenChildListViewShouldReflectIt(){
         hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "myNode", ""));
         hierarchyService.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 2L, nodeId, "newName"));
@@ -89,5 +101,21 @@ public class UpdateChildListProjection {
 
         assertThat(hierarchy).isPresent();
         assertThat(hierarchy.get().getNodes()).extracting("name").contains("newName");
+    }
+
+
+    @Test
+    public void whenNodeIsInsertedThenChildListViewShouldIncludeNodePathProperty(){
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "node", ""));
+        UUID childNodeId = UUID.randomUUID();
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 2L, childNodeId, "childNode",
+                "", Optional.of(nodeId)));
+        UUID grandChildNodeId = UUID.randomUUID();
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 3L, grandChildNodeId, "grandChildNode",
+                "", Optional.of(childNodeId)));
+
+        Optional<ChildList> childList = hierarchyService.getChildList(hierarchyId, Optional.of(grandChildNodeId));
+        String expectedNodePath = String.format("%s->%s", nodeId, childNodeId);
+        assertThat(childList.get().getNodePath()).isEqualTo(expectedNodePath);
     }
 }

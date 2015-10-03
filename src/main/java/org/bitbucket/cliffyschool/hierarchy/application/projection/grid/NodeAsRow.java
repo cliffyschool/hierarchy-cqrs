@@ -6,6 +6,7 @@ public class NodeAsRow {
     private UUID nodeId;
     private String name;
     private String color;
+    private String nodePath;
 
     public NodeAsRow(UUID nodeId, String name, String color) {
         this.nodeId = nodeId;
@@ -37,4 +38,11 @@ public class NodeAsRow {
         this.nodeId = nodeId;
     }
 
+    public String getNodePath() {
+        return nodePath;
+    }
+
+    public void setNodePath(String nodePath) {
+        this.nodePath = nodePath;
+    }
 }

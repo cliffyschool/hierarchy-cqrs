@@ -16,14 +16,12 @@ public class InsertNode {
 
     private Hierarchy hierarchy;
     private UUID nodeId;
-    private CreateNodeCommand createNodeCommand;
     private Node node;
 
     @Before
     public void setUp() {
         hierarchy = new Hierarchy(UUID.randomUUID());
         nodeId = UUID.randomUUID();
-        createNodeCommand = new CreateNodeCommand(hierarchy.getId(), 0L, nodeId, nodeId.toString(), "blue");
         node = new Node(nodeId, hierarchy.getId(), "node", "blue");
     }
 
@@ -66,7 +64,7 @@ public class InsertNode {
 
         hierarchy.insertNode(Optional.of(node), new Node(childNodeId, hierarchy.getId(), "child", "red"));
 
-        assertThat(node.getChildCount()).isEqualTo(1);
+        assertThat(hierarchy.nodePath(childNodeId)).isEqualTo(node.getId().toString());
     }
 }
 

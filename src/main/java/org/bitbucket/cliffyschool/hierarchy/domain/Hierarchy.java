@@ -2,17 +2,21 @@ package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tangosol.io.pof.annotation.Portable;
 import com.tangosol.io.pof.annotation.PortableProperty;
+import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.NameAlreadyUsedException;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeInserted;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
+import org.bitbucket.cliffyschool.hierarchy.event.NodePathChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,6 +26,8 @@ public class Hierarchy extends AggregateRoot implements Serializable {
     private Map<UUID, UUID> nodesById = Maps.newHashMap();
     private Map<String, UUID> nodesByName = Maps.newHashMap();
     private ListMultimap<UUID, UUID> childrenByParentId = ArrayListMultimap.create();
+    // example derived property?
+    private Map<UUID, String> nodePathsByNodeId = Maps.newHashMap();
 
     public Hierarchy(){
         super(null);
@@ -41,6 +47,10 @@ public class Hierarchy extends AggregateRoot implements Serializable {
         return nodesById.containsKey(nodeId);
     }
 
+    public String nodePath(UUID nodeId){
+        return nodePathsByNodeId.get(nodeId);
+    }
+
     public void insertNode(Optional<Node> parentNode, Node node) {
         if (node == null)
             throw new NullPointerException("node");
@@ -51,11 +61,10 @@ public class Hierarchy extends AggregateRoot implements Serializable {
         nodesByName.put(node.getName(), node.getId());
         parentNode.ifPresent(pNode -> {
             childrenByParentId.put(pNode.getId(), node.getId());
-            pNode.changeChildCount(pNode.getChildCount() + 1);
-            changeEvents.append(pNode.getChangeEvents());
         });
-
         changeEvents.append(new NodeInserted(id, parentNode.map(AggregateRoot::getId), node.getId()));
+
+        calculateDerivedValues(node.getId());
     }
 
     public Optional<UUID> getParentId(UUID nodeId) {
@@ -77,6 +86,23 @@ public class Hierarchy extends AggregateRoot implements Serializable {
 
         Optional<UUID> parentId = getParentId(node.getId());
         changeEvents.append(new NodeNameChanged(id, node.getId(), parentId, changeNodeNameCmd.getNewName()));
+    }
+
+    private void calculateDerivedValues(UUID nodeId) {
+        List<UUID> ancestorIds = Lists.newArrayList();
+        collectAncestorIds(nodeId, ancestorIds);
+
+        String nodePath =  StringUtils.join(Lists.reverse(ancestorIds), "->");
+        nodePathsByNodeId.put(nodeId, nodePath);
+        changeEvents.append(new NodePathChanged(id, nodeId, nodePath));
+    }
+
+    private void collectAncestorIds(UUID nodeId, List<UUID> ancestorIds) {
+        Optional<UUID> parentId = getParentId(nodeId);
+        if (!parentId.isPresent())
+            return;
+        ancestorIds.add(parentId.get());
+        collectAncestorIds(parentId.get(), ancestorIds);
     }
 
     @Override

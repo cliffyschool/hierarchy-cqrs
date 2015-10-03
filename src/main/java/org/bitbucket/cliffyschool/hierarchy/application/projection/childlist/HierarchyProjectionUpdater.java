@@ -71,6 +71,9 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
         rootChildList.getNodes().remove(node);
 
         childListProjection.write(key, childList);
+
+        childListProjection.write(new ChildListProjectionKey(e.getHierarchyId(), Optional.of(e.getChildNodeId())),
+                new ChildList(e.getChildNodeId(), Lists.newArrayList()));
     }
 
     private void handle(NodeNameChanged e){
@@ -81,5 +84,9 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
         childList.getNodes().stream().filter(n -> n.getNodeId().equals(e.getNodeId())).findFirst()
                         .ifPresent(n -> n.setName(e.getNewName()));
         childListProjection.write(key, childList);
+    }
+
+    private void handle(NodePathChanged e) {
+
     }
 }
