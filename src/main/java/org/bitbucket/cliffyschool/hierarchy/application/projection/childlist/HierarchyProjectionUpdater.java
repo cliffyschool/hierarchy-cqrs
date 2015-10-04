@@ -19,6 +19,7 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
                     .put(NodeCreated.class, e -> handle((NodeCreated) e))
                     .put(NodeInserted.class, e -> handle((NodeInserted)e))
                     .put(NodeNameChanged.class, e -> handle((NodeNameChanged) e))
+                    .put(NodePathChanged.class, e -> handle((NodePathChanged)e))
             .build();
 
     private ChildListProjection childListProjection;
@@ -55,23 +56,22 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
 
     private void handle(NodeInserted e){
 
-        ChildListProjectionKey key = new ChildListProjectionKey(e.getHierarchyId(), e.getParentNodeId());
-        ChildList childList = childListProjection.find(key)
+        ChildListProjectionKey keyToParent = new ChildListProjectionKey(e.getHierarchyId(), e.getParentNodeId());
+        ChildList childrenUnderParent = childListProjection.find(keyToParent)
                 .orElse(new ChildList(e.getParentNodeId().orElse(null), Lists.newArrayList()));
 
-        ChildList rootChildList = childListProjection.find(new ChildListProjectionKey(e.getHierarchyId(), Optional.empty()))
+        ChildList childrenUnderRoot = childListProjection.find(new ChildListProjectionKey(e.getHierarchyId(), Optional.empty()))
                 .orElseThrow(() -> new ObjectNotFoundException("ChildList", e.getHierarchyId()));
 
-        Node node = rootChildList.getNodes().stream()
+        Node insertedChild = childrenUnderRoot.getNodes().stream()
                 .filter(n -> n.getNodeId().equals(e.getChildNodeId()))
                 .findFirst()
                 .orElseThrow(() -> new ObjectNotFoundException("Node", e.getChildNodeId()));
 
-        childList.getNodes().add(node);
-        rootChildList.getNodes().remove(node);
+        childrenUnderParent.getNodes().add(insertedChild);
+        childrenUnderRoot.getNodes().remove(insertedChild);
 
-        childListProjection.write(key, childList);
-
+        childListProjection.write(keyToParent, childrenUnderParent);
         childListProjection.write(new ChildListProjectionKey(e.getHierarchyId(), Optional.of(e.getChildNodeId())),
                 new ChildList(e.getChildNodeId(), Lists.newArrayList()));
     }
@@ -87,6 +87,12 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
     }
 
     private void handle(NodePathChanged e) {
+        ChildListProjectionKey key = new ChildListProjectionKey(e.getHierarchyId(), e.getParentNodeId());
+        ChildList childList = childListProjection.find(key)
+                .orElseThrow(() -> new ObjectNotFoundException("ChildList", e.getHierarchyId()));
 
+        childList.getNodes().stream().filter(n -> n.getNodeId().equals(e.getNodeId())).findFirst()
+                        .ifPresent(n -> n.setNodePath(e.getNodePath()));
+        childListProjection.write(key, childList);
     }
 }

@@ -114,8 +114,11 @@ public class UpdateChildListProjection {
         hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 3L, grandChildNodeId, "grandChildNode",
                 "", Optional.of(childNodeId)));
 
-        Optional<ChildList> childList = hierarchyService.getChildList(hierarchyId, Optional.of(grandChildNodeId));
+        Optional<ChildList> childList = hierarchyService.getChildList(hierarchyId, Optional.of(childNodeId));
+        Node grandChild = childList.get().getNodes().stream()
+                .filter(n -> n.getNodeId().equals(grandChildNodeId))
+                .findFirst().get();
         String expectedNodePath = String.format("%s->%s", nodeId, childNodeId);
-        assertThat(childList.get().getNodePath()).isEqualTo(expectedNodePath);
+        assertThat(grandChild.getNodePath()).isEqualTo(expectedNodePath);
     }
 }

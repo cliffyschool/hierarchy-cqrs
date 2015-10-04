@@ -10,6 +10,7 @@ public class Node  {
     private String name;
     private String color;
     private List<Node> children;
+    private String nodePath;
 
     public Node(UUID nodeId, String name, String color) {
         this.nodeId = nodeId;
@@ -44,5 +45,14 @@ public class Node  {
 
     public List<Node> getChildren(){
         return children;
+    }
+
+
+    public String getNodePath() {
+        return nodePath;
+    }
+
+    public void setNodePath(String nodePath) {
+        this.nodePath = nodePath;
     }
 }

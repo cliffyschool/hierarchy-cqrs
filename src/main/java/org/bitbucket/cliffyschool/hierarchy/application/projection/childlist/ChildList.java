@@ -6,7 +6,6 @@ import java.util.UUID;
 public class ChildList {
     private UUID id;
     private List<Node> nodes;
-    private String nodePath;
 
     public ChildList(UUID id, List<Node> nodes)
     {
@@ -24,13 +23,5 @@ public class ChildList {
 
     public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
-    }
-
-    public String getNodePath() {
-        return nodePath;
-    }
-
-    public void setNodePath(String nodePath) {
-        this.nodePath = nodePath;
     }
 }

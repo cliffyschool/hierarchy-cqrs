@@ -4,8 +4,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.tangosol.io.pof.annotation.Portable;
-import com.tangosol.io.pof.annotation.PortableProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.NameAlreadyUsedException;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
@@ -92,9 +90,10 @@ public class Hierarchy extends AggregateRoot implements Serializable {
         List<UUID> ancestorIds = Lists.newArrayList();
         collectAncestorIds(nodeId, ancestorIds);
 
+        Optional<UUID> parentId = ancestorIds.stream().findFirst();
         String nodePath =  StringUtils.join(Lists.reverse(ancestorIds), "->");
         nodePathsByNodeId.put(nodeId, nodePath);
-        changeEvents.append(new NodePathChanged(id, nodeId, nodePath));
+        changeEvents.append(new NodePathChanged(id, parentId, nodeId, nodePath));
     }
 
     private void collectAncestorIds(UUID nodeId, List<UUID> ancestorIds) {
