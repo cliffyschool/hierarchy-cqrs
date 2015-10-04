@@ -8,6 +8,10 @@
             <cache-name>hierarchyCache</cache-name>
             <scheme-name>distributed</scheme-name>
         </cache-mapping>
+        <cache-mapping>
+            <cache-name>nodeCache</cache-name>
+            <scheme-name>distributed</scheme-name>
+        </cache-mapping>
     </caching-scheme-mapping>
 
     <caching-schemes>

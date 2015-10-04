@@ -35,6 +35,25 @@ public class Hierarchy extends AggregateRoot implements Serializable {
         super(id);
     }
 
+    @Override
+    public AggregateRoot withVersionId(long newVersionId) {
+        Hierarchy ret = new Hierarchy(id);
+        ret.nodesById = Maps.newHashMap(nodesById);
+        ret.nodesByName = Maps.newHashMap(nodesByName);
+        ret.childrenByParentId = ArrayListMultimap.create(childrenByParentId);
+        ret.nodePathsByNodeId = Maps.newHashMap(nodePathsByNodeId);
+        ret.versionId = newVersionId;
+        return ret;
+    }
+
+    public Hierarchy(Hierarchy copyFrom, long newVersionId){
+        this.nodesById = Maps.newHashMap(copyFrom.nodesById);
+        this.nodesByName = Maps.newHashMap(copyFrom.nodesByName);
+        this.childrenByParentId = ArrayListMultimap.create(copyFrom.childrenByParentId);
+        this.nodePathsByNodeId = Maps.newHashMap(copyFrom.nodePathsByNodeId);
+        this.versionId = newVersionId;
+    }
+
     public static Hierarchy createHierarchy(UUID id) {
         Hierarchy hierarchy = new Hierarchy(id);
         hierarchy.changeEvents.append(new HierarchyCreated(id));

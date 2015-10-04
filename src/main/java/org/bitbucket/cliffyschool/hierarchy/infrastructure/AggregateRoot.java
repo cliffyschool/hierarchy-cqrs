@@ -34,4 +34,6 @@ public abstract class AggregateRoot implements Serializable {
     public EventStream getChangeEvents(){
         return changeEvents;
     }
+
+    public abstract AggregateRoot withVersionId(long newVersionId);
 }

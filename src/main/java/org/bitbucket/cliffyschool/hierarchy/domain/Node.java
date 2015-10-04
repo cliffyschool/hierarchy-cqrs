@@ -6,9 +6,10 @@ import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodePropertyValueChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Node extends AggregateRoot{
+public class Node extends AggregateRoot implements Serializable {
     private UUID hierarchyId;
     private String name;
     private String color;
@@ -40,5 +41,12 @@ public class Node extends AggregateRoot{
 
     void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand) {
         name = changeNodeNameCommand.getNewName();
+    }
+
+    @Override
+    public AggregateRoot withVersionId(long newVersionId) {
+        Node ret = new Node(id, hierarchyId, name, color);
+        ret.versionId = newVersionId;
+        return ret;
     }
 }
