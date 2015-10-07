@@ -2,14 +2,17 @@ package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
 
 import com.google.common.collect.Lists;
 import org.bitbucket.cliffyschool.hierarchy.application.HierarchyService;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjectionUpdater;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Node;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjectionUpdater;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.NodeAsRow;
 import org.bitbucket.cliffyschool.hierarchy.application.service.DefaultHierarchyService;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodePropertyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.repository.DummyHierarchyRepository;
@@ -84,4 +87,18 @@ public class UpdateGridProjection {
         assertThat(grandChildRow.get().getNodePath()).isEqualTo(expectedNodePath);
 
     }
+    @Test
+    public void whenNodeColorIsChangedThenGridViewShouldReflectIt(){
+        UUID childId = UUID.randomUUID();
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "parent", "blue", Optional.empty()));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 2L, childId, "child", "blue", Optional.of(nodeId)));
+
+        hierarchyService.changeNodePropertyValue(new ChangeNodePropertyCommand(childId, 1L, "color", "red"));
+        Optional<HierarchyAsGrid> grid = hierarchyService.getHierarchyAsGrid(hierarchyId);
+
+        assertThat(grid).isPresent();
+        NodeAsRow node = grid.get().getRows().stream().filter(n -> n.getNodeId().equals(childId)).findFirst().get();
+        assertThat(node.getColor()).isEqualTo("red");
+    }
+
 }

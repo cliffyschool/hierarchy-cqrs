@@ -18,6 +18,7 @@ public class HierarchyAsGridProjectionUpdater implements ProjectionHandler {
                     .put(NodeCreated.class, e -> handle((NodeCreated) e))
                     .put(NodeNameChanged.class, e -> handle((NodeNameChanged) e))
                     .put(NodePathChanged.class, e -> handle((NodePathChanged) e))
+                    .put(NodePropertyValueChanged.class, e -> handle((NodePropertyValueChanged<?>)e))
             .build();
 
     private HierarchyAsGridProjection gridProjection;
@@ -63,6 +64,18 @@ public class HierarchyAsGridProjectionUpdater implements ProjectionHandler {
         grid.getRows().stream()
                  .filter(n -> n.getNodeId().equals(nodePathChanged.getNodeId())).findAny()
                  .ifPresent(n -> n.setNodePath(nodePathChanged.getNodePath()));
+        gridProjection.write(grid.getId(), grid);
+    }
+
+    private void handle(NodePropertyValueChanged<?> nodePropValChanged) {
+        HierarchyAsGrid grid = gridProjection.find(nodePropValChanged.getHierarchyId())
+                .orElseThrow(() -> new RuntimeException("Can't find hierarchy."));
+        grid.getRows().stream()
+                 .filter(n -> n.getNodeId().equals(nodePropValChanged.getNodeId())).findAny()
+                 .ifPresent(n -> {
+                     if ("color".equalsIgnoreCase(nodePropValChanged.getPropertyName()))
+                         n.setColor((String)nodePropValChanged.getNewValue());
+                 });
         gridProjection.write(grid.getId(), grid);
     }
 }
