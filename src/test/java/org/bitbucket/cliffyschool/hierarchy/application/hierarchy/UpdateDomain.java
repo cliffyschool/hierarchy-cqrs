@@ -5,6 +5,7 @@ import org.bitbucket.cliffyschool.hierarchy.application.exception.ObjectNotFound
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.service.DefaultHierarchyService;
+import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodePropertyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;
@@ -125,6 +126,16 @@ public class UpdateDomain {
         thrown.expect(ObjectNotFoundException.class);
         thrown.expectMessage(containsString("Node"));
         hierarchyService.insertNode(new InsertNodeCommand(hierarchyId, 1L, nodeId, UUID.randomUUID()));
+    }
+
+    @Test
+    public void changeNodePropertyValueShouldSaveNewValue(){
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "node name", "blue"));
+        hierarchyService.changeNodePropertyValue(new ChangeNodePropertyCommand(nodeId, 1L, "color", "red"));
+
+        Node node = nodeRepository.findById(nodeId).get();
+
+        assertThat(node.getColor()).isEqualTo("red");
     }
 
 }
