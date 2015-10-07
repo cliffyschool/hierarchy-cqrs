@@ -13,6 +13,14 @@ public class ChildListProjectionKey
         this.parentNodeId = parentNodeId;
     }
 
+    public UUID getHierarchyId() {
+        return hierarchyId;
+    }
+
+    public Optional<UUID> getParentNodeId() {
+        return parentNodeId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

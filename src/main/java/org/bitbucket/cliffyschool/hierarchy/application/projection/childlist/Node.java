@@ -9,14 +9,12 @@ public class Node  {
    private UUID nodeId;
     private String name;
     private String color;
-    private List<Node> children;
     private String nodePath;
 
     public Node(UUID nodeId, String name, String color) {
         this.nodeId = nodeId;
         this.name = name;
         this.color = color;
-        children = Lists.newArrayList();
     }
 
     public String getName() {
@@ -42,11 +40,6 @@ public class Node  {
     public void setNodeId(UUID nodeId) {
         this.nodeId = nodeId;
     }
-
-    public List<Node> getChildren(){
-        return children;
-    }
-
 
     public String getNodePath() {
         return nodePath;

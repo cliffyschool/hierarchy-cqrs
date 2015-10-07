@@ -7,9 +7,11 @@ import org.bitbucket.cliffyschool.hierarchy.event.*;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.ProjectionHandler;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ChildListProjectionUpdater implements ProjectionHandler {
 
@@ -20,6 +22,7 @@ public class ChildListProjectionUpdater implements ProjectionHandler {
                     .put(NodeInserted.class, e -> handle((NodeInserted)e))
                     .put(NodeNameChanged.class, e -> handle((NodeNameChanged) e))
                     .put(NodePathChanged.class, e -> handle((NodePathChanged)e))
+                    .put(NodePropertyValueChanged.class, e-> handle((NodePropertyValueChanged<?>)e))
             .build();
 
     private ChildListProjection childListProjection;
@@ -94,5 +97,15 @@ public class ChildListProjectionUpdater implements ProjectionHandler {
         childList.getNodes().stream().filter(n -> n.getNodeId().equals(e.getNodeId())).findFirst()
                         .ifPresent(n -> n.setNodePath(e.getNodePath()));
         childListProjection.write(key, childList);
+    }
+
+    private void handle(NodePropertyValueChanged<?> e) {
+        List<ChildList> childLists = childListProjection.findListsContainingChild(e.getHierarchyId(), e.getNodeId());
+        childLists.stream()
+                .flatMap(l -> l.getNodes().stream().filter(n -> n.getNodeId().equals(e.getNodeId())))
+                .forEach(n -> {
+                    if ("color".equalsIgnoreCase(e.getPropertyName()))
+                        n.setColor((String)e.getNewValue());
+                });
     }
 }

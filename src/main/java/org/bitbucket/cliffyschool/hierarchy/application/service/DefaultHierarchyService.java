@@ -7,10 +7,7 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Chi
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjectionKey;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
-import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
-import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
-import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.*;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.domain.Node;
@@ -117,5 +114,16 @@ public class DefaultHierarchyService implements HierarchyService {
     @Override
     public Optional<ChildList> getChildList(UUID hierarchyId, Optional<UUID> parentNodeId) {
         return childListProjection.find(new ChildListProjectionKey(hierarchyId, parentNodeId));
+    }
+
+    @Override
+    public void changeNodePropertyValue(ChangeNodePropertyCommand changeNodePropertyCommand) {
+        Node node = nodeRepository.findById(changeNodePropertyCommand.getNodeId())
+                .orElseThrow(() -> new ObjectNotFoundException("Node", changeNodePropertyCommand.getNodeId()));
+
+        node.changePropertyValue(changeNodePropertyCommand.getPropertyName(), changeNodePropertyCommand.getPropertyValue());
+        nodeRepository.store(node.getId(), node, changeNodePropertyCommand.getLastNodeVersionLoaded());
+
+        fakeBus.publish(node.getChangeEvents());
     }
 }

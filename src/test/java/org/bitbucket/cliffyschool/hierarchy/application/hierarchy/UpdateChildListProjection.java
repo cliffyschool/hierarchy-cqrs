@@ -10,6 +10,7 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.Hierarch
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjectionUpdater;
 import org.bitbucket.cliffyschool.hierarchy.application.service.DefaultHierarchyService;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
+import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodePropertyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.repository.DummyHierarchyRepository;
@@ -120,5 +121,19 @@ public class UpdateChildListProjection {
                 .findFirst().get();
         String expectedNodePath = String.format("%s->%s", nodeId, childNodeId);
         assertThat(grandChild.getNodePath()).isEqualTo(expectedNodePath);
+    }
+
+    @Test
+    public void whenNodeColorIsChangedThenChildListViewShouldReflectIt(){
+        UUID childId = UUID.randomUUID();
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 1L, nodeId, "parent", "blue", Optional.empty()));
+        hierarchyService.createNewNode(new CreateNodeCommand(hierarchyId, 2L, childId, "child", "blue", Optional.of(nodeId)));
+
+        hierarchyService.changeNodePropertyValue(new ChangeNodePropertyCommand(childId, 1L, "color", "red"));
+        Optional<ChildList> list = hierarchyService.getChildList(hierarchyId, Optional.of(nodeId));
+
+        assertThat(list).isPresent();
+        Node node = list.get().getNodes().stream().filter(n -> n.getNodeId().equals(childId)).findFirst().get();
+        assertThat(node.getColor()).isEqualTo("red");
     }
 }

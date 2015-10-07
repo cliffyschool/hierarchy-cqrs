@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public class DummyProjectionStore <K,T> {
 
-    private Map<K, T> objectsById = Maps.newHashMap();
+    protected Map<K, T> objectsById = Maps.newHashMap();
 
     public void write(K id, T viewDto){
         objectsById.put(id, viewDto);

@@ -39,6 +39,14 @@ public class Node extends AggregateRoot implements Serializable {
 
     public UUID getHierarchyId() { return hierarchyId; }
 
+    public void changePropertyValue(String propertyName, String value) {
+        if ("color".equalsIgnoreCase(propertyName)){
+            String previousColor = color;
+            color = value;
+            changeEvents.append(new NodePropertyValueChanged<>(hierarchyId, id, "color", color, previousColor));
+        }
+    }
+
     void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand) {
         name = changeNodeNameCommand.getNewName();
     }
