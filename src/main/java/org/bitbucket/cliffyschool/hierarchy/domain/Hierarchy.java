@@ -47,6 +47,7 @@ public class Hierarchy extends AggregateRoot implements Serializable {
     }
 
     public Hierarchy(Hierarchy copyFrom, long newVersionId){
+        this(copyFrom.id);
         this.nodesById = Maps.newHashMap(copyFrom.nodesById);
         this.nodesByName = Maps.newHashMap(copyFrom.nodesByName);
         this.childrenByParentId = ArrayListMultimap.create(copyFrom.childrenByParentId);

@@ -10,10 +10,15 @@ import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
+import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.domain.Node;
+import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
+import org.bitbucket.cliffyschool.hierarchy.domain.repository.CoherenceHierarchyRepository;
+import org.bitbucket.cliffyschool.hierarchy.domain.repository.CoherenceNodeRepository;
 import org.bitbucket.cliffyschool.hierarchy.domain.repository.DummyHierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.domain.repository.DummyNodeRepository;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.Repository;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,8 +33,8 @@ import static org.mockito.Mockito.mock;
 
 public class UpdateDomain {
 
-    private DummyHierarchyRepository hierarchyRepository;
-    private DummyNodeRepository nodeRepository;
+    private HierarchyRepository hierarchyRepository;
+    private NodeRepository nodeRepository;
     private HierarchyService hierarchyService;
     private UUID hierarchyId;
     private Hierarchy hierarchy;
@@ -40,8 +45,8 @@ public class UpdateDomain {
 
     @Before
     public void setUp() {
-        hierarchyRepository = new DummyHierarchyRepository();
-        nodeRepository = new DummyNodeRepository();
+        hierarchyRepository = new CoherenceHierarchyRepository();
+        nodeRepository = new CoherenceNodeRepository();
         hierarchyService = new DefaultHierarchyService(hierarchyRepository, nodeRepository,
                 mock(ChildListProjection.class), mock(HierarchyAsGridProjection.class),
                 mock(FakeBus.class));
