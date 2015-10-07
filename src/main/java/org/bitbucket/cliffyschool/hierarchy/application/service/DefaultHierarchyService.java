@@ -62,13 +62,8 @@ public class DefaultHierarchyService implements HierarchyService {
 
         hierarchyRepository.store(hierarchy.getId(), hierarchy, createNodeCommand.getLastHierarchyVersionLoaded());
         nodeRepository.store(node.getId(), node, 0);
-        parentNode.ifPresent(pNode -> {
-            nodeRepository.store(pNode.getId(), pNode, pNode.getVersionId());
-        });
 
-        EventStream eventStream = EventStream.from(node.getChangeEvents().getEvents());
-        eventStream.append(hierarchy.getChangeEvents());
-        fakeBus.publish(eventStream);
+        fakeBus.publish(node.getChangeEvents().append(hierarchy.getChangeEvents()));
     }
 
     @Override
@@ -82,13 +77,8 @@ public class DefaultHierarchyService implements HierarchyService {
 
         hierarchy.insertNode(Optional.of(parentNode), childNode);
         hierarchyRepository.store(hierarchy.getId(), hierarchy, insertNodeCommand.getLastHierarchyVersionLoaded());
-        nodeRepository.store(parentNode.getId(), parentNode, parentNode.getVersionId());
 
-        EventStream eventStream = hierarchy.getChangeEvents()
-                .append(parentNode.getChangeEvents())
-                .append(childNode.getChangeEvents());
-
-        fakeBus.publish(eventStream);
+        fakeBus.publish(hierarchy.getChangeEvents());
     }
 
     @Override
@@ -107,16 +97,6 @@ public class DefaultHierarchyService implements HierarchyService {
     }
 
     @Override
-    public Optional<HierarchyAsGrid> getHierarchyAsGrid(UUID hierarchyId) {
-        return gridProjection.find(hierarchyId);
-    }
-
-    @Override
-    public Optional<ChildList> getChildList(UUID hierarchyId, Optional<UUID> parentNodeId) {
-        return childListProjection.find(new ChildListProjectionKey(hierarchyId, parentNodeId));
-    }
-
-    @Override
     public void changeNodePropertyValue(ChangeNodePropertyCommand changeNodePropertyCommand) {
         Node node = nodeRepository.findById(changeNodePropertyCommand.getNodeId())
                 .orElseThrow(() -> new ObjectNotFoundException("Node", changeNodePropertyCommand.getNodeId()));
@@ -125,5 +105,15 @@ public class DefaultHierarchyService implements HierarchyService {
         nodeRepository.store(node.getId(), node, changeNodePropertyCommand.getLastNodeVersionLoaded());
 
         fakeBus.publish(node.getChangeEvents());
+    }
+
+    @Override
+    public Optional<HierarchyAsGrid> getHierarchyAsGrid(UUID hierarchyId) {
+        return gridProjection.find(hierarchyId);
+    }
+
+    @Override
+    public Optional<ChildList> getChildList(UUID hierarchyId, Optional<UUID> parentNodeId) {
+        return childListProjection.find(new ChildListProjectionKey(hierarchyId, parentNodeId));
     }
 }
