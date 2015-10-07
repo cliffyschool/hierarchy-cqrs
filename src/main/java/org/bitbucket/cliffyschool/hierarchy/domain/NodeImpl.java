@@ -6,11 +6,11 @@ import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodePropertyValueChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.BaseAggregateRoot;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.IAggregateRoot;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.SupportsPof;
 
-import java.io.Serializable;
 import java.util.UUID;
 
-public class NodeImpl extends BaseAggregateRoot implements Serializable, Node {
+public class NodeImpl extends BaseAggregateRoot implements Node, SupportsPof {
     private UUID hierarchyId;
     private String name;
     private String color;
@@ -57,9 +57,14 @@ public class NodeImpl extends BaseAggregateRoot implements Serializable, Node {
     }
 
     @Override
-    public IAggregateRoot withVersionId(long newVersionId) {
+    public Node withVersionId(long newVersionId) {
         NodeImpl ret = new NodeImpl(id, hierarchyId, name, color);
         ret.versionId = newVersionId;
         return ret;
+    }
+
+    @Override
+    public Object asPof() {
+        return new PofNode(id, versionId, hierarchyId, name, color);
     }
 }

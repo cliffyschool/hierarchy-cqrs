@@ -1,9 +1,9 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
+import com.tangosol.io.pof.PofReader;
+import com.tangosol.io.pof.PofWriter;
+import com.tangosol.io.pof.PortableObject;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.NameAlreadyUsedException;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
@@ -13,24 +13,19 @@ import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
 import org.bitbucket.cliffyschool.hierarchy.event.NodePathChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.BaseAggregateRoot;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.IAggregateRoot;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.SupportsPof;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-public class HierarchyImpl extends BaseAggregateRoot implements Serializable, Hierarchy {
+public class HierarchyImpl extends BaseAggregateRoot implements Hierarchy, SupportsPof {
 
-    private Map<UUID, UUID> nodesById = Maps.newHashMap();
-    private Map<String, UUID> nodesByName = Maps.newHashMap();
-    private ListMultimap<UUID, UUID> childrenByParentId = ArrayListMultimap.create();
+    Map<UUID, UUID> nodesById = Maps.newHashMap();
+    Map<String, UUID> nodesByName = Maps.newHashMap();
+    ListMultimap<UUID, UUID> childrenByParentId = ArrayListMultimap.create();
     // example derived property?
-    private Map<UUID, String> nodePathsByNodeId = Maps.newHashMap();
-
-    public HierarchyImpl(){
-        super(null);
-    }
+    Map<UUID, String> nodePathsByNodeId = Maps.newHashMap();
 
     public HierarchyImpl(UUID id) {
         super(id);
@@ -130,6 +125,11 @@ public class HierarchyImpl extends BaseAggregateRoot implements Serializable, Hi
     }
 
     @Override
+    public Object asPof() {
+        return new PofHierarchy(id, versionId, nodesById, nodesByName, childrenByParentId, nodePathsByNodeId);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -149,4 +149,5 @@ public class HierarchyImpl extends BaseAggregateRoot implements Serializable, Hi
         result = 31 * result + childrenByParentId.hashCode();
         return result;
     }
+
 }

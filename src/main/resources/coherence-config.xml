@@ -18,7 +18,6 @@
         <distributed-scheme>
             <scheme-name>distributed</scheme-name>
             <service-name>DistributedCache</service-name>
-            <!--
             <serializer>
                 <instance>
                     <class-name>com.tangosol.io.pof.ConfigurablePofContext</class-name>
@@ -30,7 +29,6 @@
                     </init-params>
                 </instance>
             </serializer>
-            -->
             <backing-map-scheme>
                 <local-scheme/>
             </backing-map-scheme>
