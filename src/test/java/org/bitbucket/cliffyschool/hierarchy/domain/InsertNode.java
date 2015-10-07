@@ -21,7 +21,7 @@ public class InsertNode {
     public void setUp() {
         hierarchy = new HierarchyImpl(UUID.randomUUID());
         nodeId = UUID.randomUUID();
-        node = new Node(nodeId, hierarchy.getId(), "node", "blue");
+        node = new NodeImpl(nodeId, hierarchy.getId(), "node", "blue");
     }
 
     @Test
@@ -34,7 +34,7 @@ public class InsertNode {
     @Test
     public void whenNodeAddedThenCanRetrieveParentId(){
         hierarchy.insertNode(Optional.empty(), node);
-        Node child = new Node(UUID.randomUUID(), hierarchy.getId(), "child", "blue");
+        Node child = new NodeImpl(UUID.randomUUID(), hierarchy.getId(), "child", "blue");
 
         hierarchy.insertNode(Optional.of(node), child);
         Optional<UUID> parentId = hierarchy.getParentId(child.getId());
@@ -53,7 +53,7 @@ public class InsertNode {
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(containsString("exists"));
 
-        hierarchy.insertNode(Optional.empty(), new Node(UUID.randomUUID(), hierarchy.getId(), nameOfExistingNode, node.getColor()));
+        hierarchy.insertNode(Optional.empty(), new NodeImpl(UUID.randomUUID(), hierarchy.getId(), nameOfExistingNode, node.getColor()));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class InsertNode {
         UUID childNodeId = UUID.randomUUID();
         hierarchy.insertNode(Optional.empty(), node);
 
-        hierarchy.insertNode(Optional.of(node), new Node(childNodeId, hierarchy.getId(), "child", "red"));
+        hierarchy.insertNode(Optional.of(node), new NodeImpl(childNodeId, hierarchy.getId(), "child", "red"));
 
         assertThat(hierarchy.nodePath(childNodeId)).isEqualTo(node.getId().toString());
     }

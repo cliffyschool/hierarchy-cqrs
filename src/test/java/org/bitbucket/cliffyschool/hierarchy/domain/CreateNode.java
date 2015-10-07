@@ -20,7 +20,7 @@ public class CreateNode {
 
     @Test
     public void whenNodeCreatedThenPropertiesShouldBeSet() {
-        Node node = new Node(nodeId, hierarchyId, "node1", "blue");
+        Node node = new NodeImpl(nodeId, hierarchyId, "node1", "blue");
 
         assertThat(node.getName()).isEqualTo("node1");
         assertThat(node.getColor()).isEqualTo("blue");

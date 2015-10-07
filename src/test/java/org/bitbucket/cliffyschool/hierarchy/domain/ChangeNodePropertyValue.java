@@ -18,7 +18,7 @@ public class ChangeNodePropertyValue {
     public void setUp(){
         nodeId = UUID.randomUUID();
         hierarchyId = UUID.randomUUID();
-        node = new Node(nodeId, hierarchyId, "name", "blue");
+        node = new NodeImpl(nodeId, hierarchyId, "name", "blue");
     }
 
     @Test

@@ -23,9 +23,9 @@ public class CoherenceHierarchyRepositoryTest {
         hierarchyRepository = new CoherenceHierarchyRepository();
 
         hierarchy = HierarchyImpl.createHierarchy(UUID.randomUUID());
-        Node node = Node.createNode(new CreateNodeCommand(hierarchy.getId(), hierarchy.getVersionId(), UUID.randomUUID(),
+        Node node = NodeImpl.createNode(new CreateNodeCommand(hierarchy.getId(), hierarchy.getVersionId(), UUID.randomUUID(),
                 "a Node", "blue", Optional.empty()));
-        Node childNode = Node.createNode(new CreateNodeCommand(hierarchy.getId(), hierarchy.getVersionId(), UUID.randomUUID(),
+        Node childNode = NodeImpl.createNode(new CreateNodeCommand(hierarchy.getId(), hierarchy.getVersionId(), UUID.randomUUID(),
                 "a child Node", "blue", Optional.of(node.getId())));
         hierarchy.insertNode(Optional.of(node), childNode);
     }

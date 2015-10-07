@@ -13,5 +13,5 @@ public interface Hierarchy extends IAggregateRoot{
 
     Optional<UUID> getParentId(UUID nodeId);
 
-    void changeNodeName(ChangeNodeNameCommand changeNodeNameCmd, Node node);
+    void changeNodeName(ChangeNodeNameCommand changeNodeNameCmd, NodeImpl node);
 }

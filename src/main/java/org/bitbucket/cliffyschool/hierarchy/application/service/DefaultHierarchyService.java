@@ -53,7 +53,7 @@ public class DefaultHierarchyService implements HierarchyService {
         if (createNodeCommand.getParentNodeId().isPresent() && !parentNode.isPresent())
             throw new ObjectNotFoundException("Node", createNodeCommand.getParentNodeId().get());
 
-        Node node = Node.createNode(createNodeCommand);
+        Node node = NodeImpl.createNode(createNodeCommand);
         hierarchy.insertNode(parentNode, node);
 
         hierarchyRepository.store(hierarchy.getId(), hierarchy, createNodeCommand.getLastHierarchyVersionLoaded());
@@ -84,7 +84,7 @@ public class DefaultHierarchyService implements HierarchyService {
         Hierarchy hierarchy = hierarchyRepository.findById(changeNodeNameCommand.getHierarchyId())
                 .orElseThrow(() -> new ObjectNotFoundException("Hierarchy", changeNodeNameCommand.getHierarchyId()));
 
-        hierarchy.changeNodeName(changeNodeNameCommand, node);
+        hierarchy.changeNodeName(changeNodeNameCommand, (NodeImpl)node);
         hierarchyRepository.store(hierarchy.getId(), hierarchy, changeNodeNameCommand.getLastHierarchyVersionLoaded());
         nodeRepository.store(changeNodeNameCommand.getNodeId(), node, node.getVersionId());
 

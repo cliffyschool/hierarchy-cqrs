@@ -98,7 +98,7 @@ public class HierarchyImpl extends BaseAggregateRoot implements Serializable, Hi
     }
 
     @Override
-    public void changeNodeName(ChangeNodeNameCommand changeNodeNameCmd, Node node) {
+    public void changeNodeName(ChangeNodeNameCommand changeNodeNameCmd, NodeImpl node) {
         if (nodesByName.containsKey(changeNodeNameCmd.getNewName()))
             throw new NameAlreadyUsedException("Node", changeNodeNameCmd.getNewName());
 

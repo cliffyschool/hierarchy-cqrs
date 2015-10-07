@@ -14,14 +14,14 @@ public class ChangeNodeName {
     private UUID nodeId;
     private UUID hierarchyId;
     private HierarchyImpl hierarchy;
-    private Node node;
+    private NodeImpl node;
 
     @Before
     public void setUp(){
         nodeId = UUID.randomUUID();
         hierarchyId = UUID.randomUUID();
         hierarchy = new HierarchyImpl(hierarchyId);
-        node = new Node(nodeId, hierarchyId, "name", "blue");
+        node = new NodeImpl(nodeId, hierarchyId, "name", "blue");
        hierarchy.insertNode(Optional.empty(), node);
     }
 
@@ -38,7 +38,7 @@ public class ChangeNodeName {
         hierarchy.changeNodeName(new ChangeNodeNameCommand(hierarchyId, 0, nodeId, "newName"), node);
 
         UUID newNodeId = UUID.randomUUID();
-        hierarchy.insertNode(Optional.empty(), new Node(newNodeId, hierarchyId, oldName, "blue"));
+        hierarchy.insertNode(Optional.empty(), new NodeImpl(newNodeId, hierarchyId, oldName, "blue"));
 
         assertThat(hierarchy.containsNode(newNodeId)).isNotNull();
     }
