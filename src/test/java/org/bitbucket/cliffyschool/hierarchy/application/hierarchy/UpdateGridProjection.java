@@ -3,7 +3,7 @@ package org.bitbucket.cliffyschool.hierarchy.application.hierarchy;
 import com.google.common.collect.Lists;
 import org.bitbucket.cliffyschool.hierarchy.application.HierarchyService;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
-import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.HierarchyProjectionUpdater;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjectionUpdater;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjectionUpdater;
@@ -12,7 +12,6 @@ import org.bitbucket.cliffyschool.hierarchy.application.service.DefaultHierarchy
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateHierarchyCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
-import org.bitbucket.cliffyschool.hierarchy.command.InsertNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.domain.repository.DummyHierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.domain.repository.DummyNodeRepository;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
@@ -34,7 +33,7 @@ public class UpdateGridProjection {
             childListProjection,
             gridProjection,
             new FakeBus(Lists.newArrayList(
-                    new HierarchyProjectionUpdater(childListProjection),
+                    new ChildListProjectionUpdater(childListProjection),
                     new HierarchyAsGridProjectionUpdater(gridProjection))));
     UUID hierarchyId;
     UUID nodeId;

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class HierarchyProjectionUpdater implements ProjectionHandler {
+public class ChildListProjectionUpdater implements ProjectionHandler {
 
     private Map<Class<? extends Event>,Consumer<? super Event>> handlers =
             new ImmutableMap.Builder<Class<? extends Event>,Consumer<? super Event>>()
@@ -24,7 +24,7 @@ public class HierarchyProjectionUpdater implements ProjectionHandler {
 
     private ChildListProjection childListProjection;
 
-    public HierarchyProjectionUpdater(ChildListProjection childListProjection) {
+    public ChildListProjectionUpdater(ChildListProjection childListProjection) {
         this.childListProjection = childListProjection;
     }
 

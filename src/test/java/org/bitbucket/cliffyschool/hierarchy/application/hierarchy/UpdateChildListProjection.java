@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import org.bitbucket.cliffyschool.hierarchy.application.HierarchyService;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildList;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjection;
-import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.HierarchyProjectionUpdater;
+import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.ChildListProjectionUpdater;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Node;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjectionUpdater;
@@ -33,7 +33,7 @@ public class UpdateChildListProjection {
             childListProjection,
             gridProjection,
             new FakeBus(Lists.newArrayList(
-                    new HierarchyProjectionUpdater(childListProjection),
+                    new ChildListProjectionUpdater(childListProjection),
                     new HierarchyAsGridProjectionUpdater(gridProjection))));
     UUID hierarchyId;
     UUID nodeId;
