@@ -8,7 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.ConcurrentModificationException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,13 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CoherenceHierarchyRepositoryTest {
 
     private HierarchyRepository hierarchyRepository;
-    private Hierarchy hierarchy;
+    private HierarchyImpl hierarchy;
 
     @Before
     public void setUp(){
         hierarchyRepository = new CoherenceHierarchyRepository();
 
-        hierarchy = Hierarchy.createHierarchy(UUID.randomUUID());
+        hierarchy = HierarchyImpl.createHierarchy(UUID.randomUUID());
         Node node = Node.createNode(new CreateNodeCommand(hierarchy.getId(), hierarchy.getVersionId(), UUID.randomUUID(),
                 "a Node", "blue", Optional.empty()));
         Node childNode = Node.createNode(new CreateNodeCommand(hierarchy.getId(), hierarchy.getVersionId(), UUID.randomUUID(),

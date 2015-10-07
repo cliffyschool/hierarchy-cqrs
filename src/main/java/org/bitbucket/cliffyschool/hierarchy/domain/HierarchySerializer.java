@@ -3,18 +3,15 @@ package org.bitbucket.cliffyschool.hierarchy.domain;
 import com.tangosol.io.pof.PofReader;
 import com.tangosol.io.pof.PofSerializer;
 import com.tangosol.io.pof.PofWriter;
-import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class HierarchySerializer implements PofSerializer {
 
     @Override
     public void serialize(PofWriter pofWriter, Object o) throws IOException {
         /*
-        Hierarchy hierarchy = (Hierarchy ) o;
+        HierarchyImpl hierarchy = (HierarchyImpl ) o;
 
         pofWriter.writeString(0, hierarchy.getId().toString());
         List<String> nodes = hierarchy.nodesById.entrySet().stream()
@@ -40,7 +37,7 @@ public class HierarchySerializer implements PofSerializer {
     public Object deserialize(PofReader pofReader) throws IOException {
         /*
         UUID id = UUID.fromString(pofReader.readString(0));
-        Hierarchy hierarchy = new Hierarchy(id);
+        HierarchyImpl hierarchy = new HierarchyImpl(id);
 
         List<String> nodes = (List<String>)pofReader.readCollection(1, new ArrayList<String>());
         nodes.stream().forEach(str -> {

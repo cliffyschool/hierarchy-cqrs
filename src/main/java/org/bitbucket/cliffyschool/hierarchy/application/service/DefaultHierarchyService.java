@@ -8,11 +8,7 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.childlist.Chi
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGrid;
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.command.*;
-import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
-import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
-import org.bitbucket.cliffyschool.hierarchy.domain.Node;
-import org.bitbucket.cliffyschool.hierarchy.domain.NodeRepository;
-import org.bitbucket.cliffyschool.hierarchy.infrastructure.EventStream;
+import org.bitbucket.cliffyschool.hierarchy.domain.*;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 
 import java.util.Optional;
@@ -42,7 +38,7 @@ public class DefaultHierarchyService implements HierarchyService {
 
     @Override
     public void createNewHierarchy(CreateHierarchyCommand createHierarchyCommand) {
-        Hierarchy hierarchy = Hierarchy.createHierarchy(createHierarchyCommand.getHierarchyId());
+        HierarchyImpl hierarchy = HierarchyImpl.createHierarchy(createHierarchyCommand.getHierarchyId());
         this.hierarchyRepository.store(createHierarchyCommand.getHierarchyId(), hierarchy, 0);
 
         fakeBus.publish(hierarchy.getChangeEvents());

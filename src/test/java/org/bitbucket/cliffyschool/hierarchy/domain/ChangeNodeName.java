@@ -13,14 +13,14 @@ public class ChangeNodeName {
 
     private UUID nodeId;
     private UUID hierarchyId;
-    private Hierarchy hierarchy;
+    private HierarchyImpl hierarchy;
     private Node node;
 
     @Before
     public void setUp(){
         nodeId = UUID.randomUUID();
         hierarchyId = UUID.randomUUID();
-        hierarchy = new Hierarchy(hierarchyId);
+        hierarchy = new HierarchyImpl(hierarchyId);
         node = new Node(nodeId, hierarchyId, "name", "blue");
        hierarchy.insertNode(Optional.empty(), node);
     }

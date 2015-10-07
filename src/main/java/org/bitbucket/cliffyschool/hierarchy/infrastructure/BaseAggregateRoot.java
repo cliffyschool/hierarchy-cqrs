@@ -5,19 +5,18 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.UUID;
 
-public abstract class AggregateRoot implements Serializable {
+public abstract class BaseAggregateRoot implements Serializable, IAggregateRoot {
     protected UUID id;
     protected long versionId;
     protected transient EventStream changeEvents;
 
-    public AggregateRoot(){
+    public BaseAggregateRoot(){
         this(null);
     }
 
-    public AggregateRoot(UUID id){
+    public BaseAggregateRoot(UUID id){
         this.id = id;
         changeEvents = EventStream.from(Lists.newArrayList());
     }
@@ -32,17 +31,19 @@ public abstract class AggregateRoot implements Serializable {
         this.id = id;
     }
 
+    @Override
     public UUID getId() {
         return id;
     }
 
+    @Override
     public long getVersionId() {
         return versionId;
     }
 
+    @Override
     public EventStream getChangeEvents(){
         return changeEvents;
     }
 
-    public abstract AggregateRoot withVersionId(long newVersionId);
 }

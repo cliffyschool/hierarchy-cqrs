@@ -1,6 +1,5 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
-import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,13 +13,13 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 public class InsertNode {
 
-    private Hierarchy hierarchy;
+    private HierarchyImpl hierarchy;
     private UUID nodeId;
     private Node node;
 
     @Before
     public void setUp() {
-        hierarchy = new Hierarchy(UUID.randomUUID());
+        hierarchy = new HierarchyImpl(UUID.randomUUID());
         nodeId = UUID.randomUUID();
         node = new Node(nodeId, hierarchy.getId(), "node", "blue");
     }

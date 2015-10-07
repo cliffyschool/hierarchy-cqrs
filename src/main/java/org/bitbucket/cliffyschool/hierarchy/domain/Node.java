@@ -4,12 +4,13 @@ import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodePropertyValueChanged;
-import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.BaseAggregateRoot;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.IAggregateRoot;
 
 import java.io.Serializable;
 import java.util.UUID;
 
-public class Node extends AggregateRoot implements Serializable {
+public class Node extends BaseAggregateRoot implements Serializable {
     private UUID hierarchyId;
     private String name;
     private String color;
@@ -52,7 +53,7 @@ public class Node extends AggregateRoot implements Serializable {
     }
 
     @Override
-    public AggregateRoot withVersionId(long newVersionId) {
+    public IAggregateRoot withVersionId(long newVersionId) {
         Node ret = new Node(id, hierarchyId, name, color);
         ret.versionId = newVersionId;
         return ret;

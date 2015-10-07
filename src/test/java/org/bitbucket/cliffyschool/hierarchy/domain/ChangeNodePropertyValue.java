@@ -11,7 +11,7 @@ public class ChangeNodePropertyValue {
 
     private UUID nodeId;
     private UUID hierarchyId;
-    private Hierarchy hierarchy;
+    private HierarchyImpl hierarchy;
     private Node node;
 
     @Before

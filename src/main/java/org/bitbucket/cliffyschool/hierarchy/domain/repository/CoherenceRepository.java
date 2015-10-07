@@ -3,15 +3,15 @@ package org.bitbucket.cliffyschool.hierarchy.domain.repository;
 import com.tangosol.net.CacheFactory;
 import com.tangosol.net.NamedCache;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ConcurrencyException;
-import org.bitbucket.cliffyschool.hierarchy.infrastructure.AggregateRoot;
+import org.bitbucket.cliffyschool.hierarchy.infrastructure.IAggregateRoot;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.Repository;
 
 import java.util.Optional;
 
-public class CoherenceRepository<K,T extends AggregateRoot> implements Repository<K, T> {
+public class CoherenceRepository<K,T extends IAggregateRoot> implements Repository<K, T> {
     protected NamedCache cache;
 
-    public CoherenceRepository(String cacheName, Class<T> clazz) {
+    public CoherenceRepository(String cacheName, Class<? extends T> clazz) {
         cache = CacheFactory.getCache(cacheName,clazz.getClassLoader());
     }
 
