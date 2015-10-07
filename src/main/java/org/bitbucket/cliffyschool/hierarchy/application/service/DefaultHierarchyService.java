@@ -9,6 +9,8 @@ import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.Hierarch
 import org.bitbucket.cliffyschool.hierarchy.application.projection.grid.HierarchyAsGridProjection;
 import org.bitbucket.cliffyschool.hierarchy.command.*;
 import org.bitbucket.cliffyschool.hierarchy.domain.*;
+import org.bitbucket.cliffyschool.hierarchy.domain.hierarchy.HierarchyImpl;
+import org.bitbucket.cliffyschool.hierarchy.domain.node.NodeImpl;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.FakeBus;
 
 import java.util.Optional;

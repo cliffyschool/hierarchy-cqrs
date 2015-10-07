@@ -1,4 +1,4 @@
-package org.bitbucket.cliffyschool.hierarchy.domain;
+package org.bitbucket.cliffyschool.hierarchy.domain.hierarchy;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.tangosol.io.pof.PofReader;
 import com.tangosol.io.pof.PofWriter;
 import com.tangosol.io.pof.PortableObject;
+import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
 
 import java.io.IOException;
 import java.util.Collection;

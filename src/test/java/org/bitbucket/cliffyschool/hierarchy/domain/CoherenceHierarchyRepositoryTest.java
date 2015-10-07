@@ -2,6 +2,8 @@ package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import org.bitbucket.cliffyschool.hierarchy.application.exception.ConcurrencyException;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.hierarchy.HierarchyImpl;
+import org.bitbucket.cliffyschool.hierarchy.domain.node.NodeImpl;
 import org.bitbucket.cliffyschool.hierarchy.domain.repository.CoherenceHierarchyRepository;
 import org.junit.Before;
 import org.junit.Rule;

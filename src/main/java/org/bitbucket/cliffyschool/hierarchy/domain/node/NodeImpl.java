@@ -1,11 +1,11 @@
-package org.bitbucket.cliffyschool.hierarchy.domain;
+package org.bitbucket.cliffyschool.hierarchy.domain.node;
 
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
 import org.bitbucket.cliffyschool.hierarchy.command.CreateNodeCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.Node;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodePropertyValueChanged;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.BaseAggregateRoot;
-import org.bitbucket.cliffyschool.hierarchy.infrastructure.IAggregateRoot;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.SupportsPof;
 
 import java.util.UUID;
@@ -52,7 +52,7 @@ public class NodeImpl extends BaseAggregateRoot implements Node, SupportsPof {
         }
     }
 
-    void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand) {
+    public void changeNodeName(ChangeNodeNameCommand changeNodeNameCommand) {
         name = changeNodeNameCommand.getNewName();
     }
 

@@ -1,6 +1,8 @@
 package org.bitbucket.cliffyschool.hierarchy.domain;
 
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.hierarchy.HierarchyImpl;
+import org.bitbucket.cliffyschool.hierarchy.domain.node.NodeImpl;
 import org.junit.Before;
 import org.junit.Test;
 

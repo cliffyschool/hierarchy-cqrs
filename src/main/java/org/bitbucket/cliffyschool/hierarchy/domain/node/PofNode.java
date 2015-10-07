@@ -1,7 +1,8 @@
-package org.bitbucket.cliffyschool.hierarchy.domain;
+package org.bitbucket.cliffyschool.hierarchy.domain.node;
 
 import com.tangosol.io.pof.annotation.Portable;
 import com.tangosol.io.pof.annotation.PortableProperty;
+import org.bitbucket.cliffyschool.hierarchy.domain.Node;
 
 import java.util.UUID;
 

@@ -1,12 +1,12 @@
-package org.bitbucket.cliffyschool.hierarchy.domain;
+package org.bitbucket.cliffyschool.hierarchy.domain.hierarchy;
 
 import com.google.common.collect.*;
-import com.tangosol.io.pof.PofReader;
-import com.tangosol.io.pof.PofWriter;
-import com.tangosol.io.pof.PortableObject;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cliffyschool.hierarchy.application.exception.NameAlreadyUsedException;
 import org.bitbucket.cliffyschool.hierarchy.command.ChangeNodeNameCommand;
+import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
+import org.bitbucket.cliffyschool.hierarchy.domain.Node;
+import org.bitbucket.cliffyschool.hierarchy.domain.node.NodeImpl;
 import org.bitbucket.cliffyschool.hierarchy.event.HierarchyCreated;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeInserted;
 import org.bitbucket.cliffyschool.hierarchy.event.NodeNameChanged;
@@ -15,8 +15,6 @@ import org.bitbucket.cliffyschool.hierarchy.infrastructure.BaseAggregateRoot;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.IAggregateRoot;
 import org.bitbucket.cliffyschool.hierarchy.infrastructure.SupportsPof;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.*;
 
 public class HierarchyImpl extends BaseAggregateRoot implements Hierarchy, SupportsPof {

@@ -1,9 +1,9 @@
 package org.bitbucket.cliffyschool.hierarchy.domain.repository;
 
-import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyImpl;
+import org.bitbucket.cliffyschool.hierarchy.domain.hierarchy.HierarchyImpl;
 import org.bitbucket.cliffyschool.hierarchy.domain.HierarchyRepository;
 import org.bitbucket.cliffyschool.hierarchy.domain.Hierarchy;
-import org.bitbucket.cliffyschool.hierarchy.domain.PofHierarchy;
+import org.bitbucket.cliffyschool.hierarchy.domain.hierarchy.PofHierarchy;
 
 import java.util.UUID;
 
